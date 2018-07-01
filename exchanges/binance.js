@@ -33,11 +33,11 @@ const getUserBalance = async (context) => {
 
 const getUserBalanceDummy = async (context) => {
   return {
-    'BTC': new BigNumber('1.234')
+    'BTC': new BigNumber('3.234')
   };
 };
 
 module.exports = {
-  getUserBalance,
+  getUserBalance: getUserBalance,
   getUserBalanceDummy
 };

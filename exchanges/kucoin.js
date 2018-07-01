@@ -27,8 +27,13 @@ const getUserBalance = async (context) => {
   return nonEmptyBalances;
 };
 
-module.exports = {
-  getUserBalance
+const getUserBalanceDummy = async (context) => {
+  return {
+    'BTC': new BigNumber('2.234')
+  };
 };
 
-getUserBalance({apiKey: 'asdasd', apiSecret: 'asdas'});
+module.exports = {
+  getUserBalance: getUserBalance,
+  getUserBalanceDummy
+};
