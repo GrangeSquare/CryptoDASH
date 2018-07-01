@@ -20,7 +20,7 @@ const baseUrl = '/api/v1';
 
 router.post(`${baseUrl}/users/register`, val.users.register, userRoutes.register);
 router.post(`${baseUrl}/users/login`, val.users.login, userRoutes.login);
-router.post(`${baseUrl}/users/login1`, authc.service, val.user.login1, userRoutes.login1);
+router.post(`${baseUrl}/users/login1`, authc.service, val.users.login1, userRoutes.login1);
 router.post(`${baseUrl}/users/logout`, userRoutes.logout);
 
 router.post(`${baseUrl}/users/:id/exchange/:exchangeId`, val.users.registerUserCredentials, authc.service, authc.user, userRoutes.registerUserCredentials);
