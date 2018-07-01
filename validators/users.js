@@ -35,6 +35,19 @@ const register = [
 
 ];
 
+function validateTotpToken (tokenName, secretName) {
+  return [
+    body(tokenName)
+      .trim()
+      .not().isEmpty().withMessage(vk('token_req'))
+      .custom(custom.validateTotpToken(secretName)).withMessage(vk('token_auth')),
+    body(secretName)
+      .not().isEmpty().withMessage(vk('token_secret'))
+  ];
+}
+
+const register2 = validateTotpToken('token', 'secret');
+
 const login = [
   body('email')
     .trim()
@@ -44,6 +57,17 @@ const login = [
     .not().isEmpty().withMessage(vk('pass_req'))
     .isLength({ min: 8 }).withMessage(vk('pass_min'))
 ];
+
+const login1 = validateToken('token');
+
+function validateToken (tokenName) {
+  return [
+    body(tokenName)
+      .trim()
+      .not().isEmpty().withMessage(vk('token_req'))
+      .custom(custom.validateTotp).withMessage(vk('token_auth'))
+  ];
+}
 
 const registerUserCredentials = [
   body('apiKey')
@@ -68,5 +92,7 @@ module.exports = {
   register,
   login,
   registerUserCredentials,
-  getBalance
+  getBalance,
+  register2,
+  login1
 };

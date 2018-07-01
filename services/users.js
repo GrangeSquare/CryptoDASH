@@ -13,12 +13,12 @@ module.exports = {
   checkIfUserExists,
   registerUserCredentials,
   getWallet,
-  getUserAccountBalance
+  setUserAccountBalance
 };
 
 const sessionProperties = ['id', 'email'];
 
-async function register (request) {
+async function register (context, request, password, totpSecret) {
   try {
     await db.sequelize.transaction(async t => {
       const User = await db.User.create(request, {transaction: t});
@@ -27,8 +27,12 @@ async function register (request) {
         throw new Error('Failed to create a user');
       }
 
-      const hash = await passwords.createHashHex(request.password);
-      await db.UserAuth.create({'user_id': User.id, 'hash': hash}, {transaction: t});
+      const hash = await passwords.createHashHex(password);
+
+      await Promise.all([
+        db.UserAuth.create({'user_id': User.id, 'hash': hash}, {transaction: t}),
+        db.UserTotp.create({'user_id': User.id, 'secret': totpSecret}, {transaction: t})
+      ]);
 
       return User;
     });
@@ -85,7 +89,7 @@ async function registerUserCredentials (userId, exchangeId, params) {
     return ExchangeWallet;
   });
 
-  await getUserAccountBalance(userId, ExchangeWallet.get('id'));
+  await setUserAccountBalance(userId, ExchangeWallet.get('id'));
 }
 
 async function checkIfUserExists (email) {
@@ -109,7 +113,7 @@ async function getWallet (userId, exchangeId) {
   return Wallet;
 }
 
-async function getUserAccountBalance (userId, walletId = undefined) {
+async function setUserAccountBalance (userId, walletId = undefined) {
   const queryObj = {
     user_id: userId
   };
