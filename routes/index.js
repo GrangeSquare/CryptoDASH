@@ -7,6 +7,7 @@ const h = require('./handlers');
 const val = require('../validators');
 const session = require('./session');
 const authc = require('./authc');
+const resources = require('./resources');
 
 const router = express.Router();
 
@@ -25,7 +26,12 @@ router.post(`${baseUrl}/users/logout`, userRoutes.logout);
 
 router.post(`${baseUrl}/users/:id/exchange/:exchangeId`, val.users.registerUserCredentials, authc.service, authc.user, userRoutes.registerUserCredentials);
 
-router.post(`${baseUrl}/users/:id/set_balance`, val.users.getBalance, authc.service, authc.user, userRoutes.setUserAccountBalance);
+router.post(`${baseUrl}/users/:id/set_balance`, authc.service, authc.user, val.users.setBalance, userRoutes.setUserAccountBalance);
+router.get(`${baseUrl}/users/:id/get_balance`, authc.service, authc.user, val.users.getBalance, userRoutes.getUserAccountBalance);
+
+// resourses for front
+router.get(`${baseUrl}/resources/`, resources.getResources);
+
 router.use(h.error);
 
 module.exports = router;

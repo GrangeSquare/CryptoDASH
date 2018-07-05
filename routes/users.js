@@ -10,7 +10,8 @@ module.exports = {
   login1,
   logout,
   registerUserCredentials,
-  setUserAccountBalance
+  setUserAccountBalance,
+  getUserAccountBalance
 };
 
 async function register (req, res, next) {
@@ -62,6 +63,17 @@ async function registerUserCredentials (req, res, next) {
 async function setUserAccountBalance (req, res, next) {
   try {
     await usersService.setUserAccountBalance(req.params.id);
+    res.status(200).end();
+  } catch (err) {
+    console.log(err);
+    next(new AuthenticationError(err));
+  }
+}
+
+async function getUserAccountBalance (req, res, next) {
+  try {
+    const amountObj = await usersService.getUserAccountBalance(req.params.id);
+    res.send(amountObj);
     res.status(200).end();
   } catch (err) {
     console.log(err);

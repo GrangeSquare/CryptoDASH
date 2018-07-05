@@ -13,7 +13,8 @@ module.exports = {
   checkIfUserExists,
   registerUserCredentials,
   getWallet,
-  setUserAccountBalance
+  setUserAccountBalance,
+  getUserAccountBalance
 };
 
 const sessionProperties = ['id', 'email'];
@@ -165,6 +166,26 @@ async function setUserAccountBalance (userId, walletId = undefined) {
 
     await db.CurrencyAmount.bulkCreate(bulkInsert); // todo: perfomance issue
   });
+}
+
+async function getUserAccountBalance (userId) {
+  const queryObj = {
+    user_id: userId
+  };
+
+  const amount = await db.Currency.findAll({
+    raw: true,
+    include: [{
+      model: db.CurrencyAmount,
+      required: true,
+      attributes: ['amount'],
+      include: [{
+        model: db.ExchangeWallet,
+        where: queryObj
+      }]
+    }]
+  });
+  return amount;
 }
 
 async function removeWalletBalance (walletId) {

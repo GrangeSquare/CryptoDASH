@@ -4,9 +4,9 @@ const Kucoin = require('kucoin-api');
 const BigNumber = require('bignumber.js');
 
 const getUserBalance = async (context) => {
-  // if (!context.apiKey || !context.apiSecret) {
-  //   throw new Error();
-  // }
+  if (!context.apiKey || !context.apiSecret) {
+    throw new Error();
+  }
 
   const client = new Kucoin(context.apiKey, context.apiSecret);
   // 5b374093cbdbf73e65d3f65d

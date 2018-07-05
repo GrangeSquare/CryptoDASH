@@ -84,6 +84,10 @@ const registerUserCredentials = [
     .custom(custom.checkWalletNotExist).withMessage(vk('wallet_exists')),
   idParamValidation('exchangeId')
 ];
+const setBalance = [
+  idParamValidation('id')
+];
+
 const getBalance = [
   idParamValidation('id')
 ];
@@ -92,6 +96,7 @@ module.exports = {
   register,
   login,
   registerUserCredentials,
+  setBalance,
   getBalance,
   register2,
   login1
