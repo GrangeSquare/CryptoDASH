@@ -12,6 +12,7 @@
         "express-session": "^1.15.6",
         "express-validator": "^5.2.0",
         "kucoin-api": "0.0.3",
+        "mailsender": "^1.1.2",
         "mysql2": "^1.5.3",
         "node-binance-api": "^0.7.4",
         "sequelize": "^4.38.0",

@@ -8,6 +8,7 @@ const val = require('../validators');
 const session = require('./session');
 const authc = require('./authc');
 const resources = require('./resources');
+const email = require('./email');
 
 const router = express.Router();
 
@@ -28,6 +29,9 @@ router.post(`${baseUrl}/users/:id/exchange/:exchangeId`, val.users.registerUserC
 
 router.post(`${baseUrl}/users/:id/set_balance`, authc.service, authc.user, val.users.setBalance, userRoutes.setUserAccountBalance);
 router.get(`${baseUrl}/users/:id/get_balance`, authc.service, authc.user, val.users.getBalance, userRoutes.getUserAccountBalance);
+
+// utility endpoints
+router.get(`${baseUrl}/utils/email_verification/`, email.verify);
 
 // resourses for front
 router.get(`${baseUrl}/resources/`, resources.getResources);

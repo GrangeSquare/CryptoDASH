@@ -32,7 +32,6 @@ const register = [
     .trim()
     .not().isEmpty().withMessage(vk('ln_req'))
     .isLength({ max: 64 }).withMessage(vk('ln_long'))
-
 ];
 
 function validateTotpToken (tokenName, secretName) {

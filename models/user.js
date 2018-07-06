@@ -22,6 +22,11 @@ module.exports = (sequelize, DataTypes) => {
     last_name: {
       type: DataTypes.STRING(64),
       allowNull: false
+    },
+    email_confirmed: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
     }
   }, {
     underscored: true,

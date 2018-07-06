@@ -6,6 +6,8 @@ const auth = require('./auth');
 const utils = require('../utils');
 const exchanges = require('../exchanges');
 const currencyList = require('../utils/currencyList');
+const hmac = require('../utils/hmac');
+const emailSender = require('./email');
 
 module.exports = {
   register,
@@ -14,10 +16,12 @@ module.exports = {
   registerUserCredentials,
   getWallet,
   setUserAccountBalance,
-  getUserAccountBalance
+  getUserAccountBalance,
+  verifyEmail
 };
 
 const sessionProperties = ['id', 'email'];
+const {EMAIL_SECRET} = process.env;
 
 async function register (context, request, password, totpSecret) {
   try {
@@ -32,7 +36,8 @@ async function register (context, request, password, totpSecret) {
 
       await Promise.all([
         db.UserAuth.create({'user_id': User.id, 'hash': hash}, {transaction: t}),
-        db.UserTotp.create({'user_id': User.id, 'secret': totpSecret}, {transaction: t})
+        db.UserTotp.create({'user_id': User.id, 'secret': totpSecret}, {transaction: t}),
+        sendConfirmationEmail(request.email, request)
       ]);
 
       return User;
@@ -40,6 +45,19 @@ async function register (context, request, password, totpSecret) {
   } catch (err) {
     throw err;
   }
+}
+
+async function sendConfirmationEmail (email, data) {
+  const hmacKey = hmac.digestHex(EMAIL_SECRET, email);
+
+  const dataObj = {
+    first_name: data.first_name,
+    last_name: data.last_name,
+    company_name: 'Cryptodash' // todo: check & externalize
+  };
+
+  const ok = await emailSender.sendConfirmationEmail(email, hmacKey, dataObj);
+  return ok;
 }
 
 async function login (email, password) {
@@ -196,4 +214,18 @@ async function removeWalletBalance (walletId) {
   });
 
   return ok;
+}
+
+async function verifyEmail (data) {
+  const newHash = hmac.digestHex(EMAIL_SECRET, data.email);
+
+  if (newHash !== data.hash) {
+    throw new Error();
+  }
+
+  await db.User.update({email_confirmed: true}, {
+    where: {
+      email: data.email
+    }
+  });
 }
