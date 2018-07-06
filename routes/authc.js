@@ -5,10 +5,13 @@ const { AuthorizationError, AuthenticationError } = require('../utils/errors');
 module.exports = {
   setAuthenticated,
   user,
-  service
+  service,
+  setTotpValidated,
+  destroy
 };
 
 const STATE_AUTHENTICATED = 1;
+const STATE_TOTP_VALIDATED = 2;
 
 function setAuthenticated (req, sessionProperties) {
   if (sessionProperties) {
@@ -32,4 +35,12 @@ function service (req, res, next) {
   } else {
     next(new AuthenticationError());
   }
+}
+
+function setTotpValidated (req) {
+  req.session.state = STATE_TOTP_VALIDATED;
+}
+
+function destroy (req) {
+  req.session.destroy();
 }

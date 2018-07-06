@@ -1,11 +1,16 @@
 'use strict';
 
 const userServices = require('../services/users');
+const totp = require('../services/totp');
+const authServices = require('../services/auth');
+
 module.exports = {
   isEqual,
   hasDigits,
   validateUserEmail,
-  checkWalletNotExist
+  checkWalletNotExist,
+  validateTotpToken,
+  validateTotp
 };
 
 const digitsRegexp = new RegExp('[0-9]');
@@ -41,6 +46,31 @@ async function checkWalletNotExist (userId, {req}) {
   const walletAlreadyExists = await userServices.getWallet(userId, req.params.exchangeId);
   console.log(walletAlreadyExists);
   if (walletAlreadyExists) {
+    throw new Error();
+  }
+}
+
+function validateTotpToken (secretName) {
+  async function validate (token, {req}) {
+    const ok = await totp.validateToken(req.body[secretName], token);
+
+    if (!ok) {
+      throw new Error();
+    }
+  }
+  return validate;
+}
+
+async function validateTotp (token, {req}) {
+  if (!req.session || !req.session.user || !req.session.user.id) {
+    throw new Error();
+  }
+
+  const userId = req.session.user.id;
+
+  const ok = await authServices.checkTotpToken(userId, token);
+
+  if (!ok) {
     throw new Error();
   }
 }

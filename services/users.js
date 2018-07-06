@@ -4,18 +4,22 @@ const db = require('../models');
 const passwords = require('../utils/passwords');
 const auth = require('./auth');
 const utils = require('../utils');
+const exchanges = require('../exchanges');
+const currencyList = require('../utils/currencyList');
 
 module.exports = {
   register,
   login,
   checkIfUserExists,
   registerUserCredentials,
-  getWallet
+  getWallet,
+  setUserAccountBalance,
+  getUserAccountBalance
 };
 
 const sessionProperties = ['id', 'email'];
 
-async function register (request) {
+async function register (context, request, password, totpSecret) {
   try {
     await db.sequelize.transaction(async t => {
       const User = await db.User.create(request, {transaction: t});
@@ -24,8 +28,12 @@ async function register (request) {
         throw new Error('Failed to create a user');
       }
 
-      const hash = await passwords.createHashHex(request.password);
-      await db.UserAuth.create({'user_id': User.id, 'hash': hash}, {transaction: t});
+      const hash = await passwords.createHashHex(password);
+
+      await Promise.all([
+        db.UserAuth.create({'user_id': User.id, 'hash': hash}, {transaction: t}),
+        db.UserTotp.create({'user_id': User.id, 'secret': totpSecret}, {transaction: t})
+      ]);
 
       return User;
     });
@@ -60,12 +68,11 @@ async function getUserByEmail (userEmail) {
 }
 
 async function registerUserCredentials (userId, exchangeId, params) {
-  console.log(userId);
   if (!userId || !exchangeId || !params.apiKey || !params.apiKeySecret) {
     throw new Error();
   }
 
-  await db.sequelize.transaction(async t => {
+  const ExchangeWallet = await db.sequelize.transaction(async t => {
     const exchangeWallet = {
       user_id: userId,
       exchange_id: exchangeId
@@ -80,7 +87,10 @@ async function registerUserCredentials (userId, exchangeId, params) {
     };
 
     await db.ExchangeWalletKey.create(exchangeWalletKey, {transaction: t});
+    return ExchangeWallet;
   });
+
+  await setUserAccountBalance(userId, ExchangeWallet.get('id'));
 }
 
 async function checkIfUserExists (email) {
@@ -102,4 +112,88 @@ async function getWallet (userId, exchangeId) {
   });
 
   return Wallet;
+}
+
+async function setUserAccountBalance (userId, walletId = undefined) {
+  const queryObj = {
+    user_id: userId
+  };
+
+  if (walletId) {
+    queryObj.id = walletId;
+  }
+
+  const UserWallets = await db.ExchangeWallet.findAll({
+    where: queryObj,
+    include: [{
+      model: db.ExchangeWalletKey,
+      required: true
+    }, {
+      model: db.Exchange,
+      required: true
+    }
+    ]
+  });
+
+  if (!UserWallets) {
+    throw new Error();
+  }
+
+  UserWallets.forEach(async element => {
+    const exchangeName = element.get('Exchange').get('name');
+
+    const context = {
+      apiKey: element.get('ExchangeWalletKey').get('public_key'),
+      apiSecret: element.get('ExchangeWalletKey').get('private_key')
+    };
+
+    const balance = await exchanges[exchangeName.toLowerCase()].getUserBalanceDummy(context);
+
+    const walletId = element.get('id');
+
+    await removeWalletBalance(walletId);
+    const bulkInsert = [];
+
+    for (let i in balance) {
+      const currencyAmount = {
+        amount: balance[i].toString(),
+        currency_id: currencyList[i],
+        exchange_wallet_id: walletId
+      };
+
+      bulkInsert.push(currencyAmount);
+    }
+
+    await db.CurrencyAmount.bulkCreate(bulkInsert); // todo: perfomance issue
+  });
+}
+
+async function getUserAccountBalance (userId) {
+  const queryObj = {
+    user_id: userId
+  };
+
+  const amount = await db.Currency.findAll({
+    raw: true,
+    include: [{
+      model: db.CurrencyAmount,
+      required: true,
+      attributes: ['amount'],
+      include: [{
+        model: db.ExchangeWallet,
+        where: queryObj
+      }]
+    }]
+  });
+  return amount;
+}
+
+async function removeWalletBalance (walletId) {
+  const ok = await db.CurrencyAmount.destroy({
+    where: {
+      exchange_wallet_id: walletId
+    }
+  });
+
+  return ok;
 }

@@ -1,42 +1,43 @@
-const db = require('../models');
-const Binance = require('node-binance-api');
+'use strict';
 
-const getExchange = (apiKey, apiSecret) => {
-  const binanceInit = {
-    APIKEY: 'VITNQxnBW5hY1s6iC4XFT693BeN4SXpbCUMMYmgI7nXusywW02qUlDb6fMkdc0g8',
-    APISECRET: 'fshnXgWD8v52vL5EP3W8cvPSiLm0rzB5ZwjiqMhv6w652DvQPoPejZK3bKHAbQCI',
-    useServerTime: true,
-    test: true
-  };
-
-  return new Binance().options(binanceInit);
-};
+const Binance = require('binance-api-node').default;
+const BigNumber = require('bignumber.js');
 
 const getUserBalance = async (context) => {
   if (!context.apiKey || !context.apiSecret) {
     throw new Error();
   }
 
-  const binance = getExchange(context.apiKey, context.apiSecret);
+  const client = Binance({ // todo: check contructor
+    apiKey: context.apiKey, // 'VITNQxnBW5hY1s6iC4XFT693BeN4SXpbCUMMYmgI7nXusywW02qUlDb6fMkdc0g8',
+    apiSecret: context.apiSecret // 'fshnXgWD8v52vL5EP3W8cvPSiLm0rzB5ZwjiqMhv6w652DvQPoPejZK3bKHAbQCI'
+  });
 
-  binance.account((error, account) => {
-    try {
-      if (error) {
-        console.log(error);
-      }
-      account.balances.forEach(async element => {
-        const obj = {
-          symbol: element.asset
-        };
+  const nonEmptyBalances = {};
 
-        await db.Currency.create(obj);
-      });
-    } catch (err) {
-      console.log(err);
+  const accountBalance = await client.accountInfo();
+  if (!accountBalance) {
+    throw new Error();
+  }
+
+  accountBalance.balances.forEach((balance) => {
+    const BigNum = new BigNumber(balance.free);
+
+    if (BigNum.gt(new BigNumber(0))) {
+      nonEmptyBalances[balance.asset] = BigNum;
     }
   });
+
+  return nonEmptyBalances;
+};
+
+const getUserBalanceDummy = async (context) => {
+  return {
+    'BTC': new BigNumber('3.234')
+  };
 };
 
 module.exports = {
-  getUserBalance
+  getUserBalance: getUserBalance,
+  getUserBalanceDummy
 };

@@ -1,29 +1,21 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('currency_amount', {
+    return queryInterface.createTable('user_totp', {
       id: {
         type: Sequelize.BIGINT.UNSIGNED,
         autoIncrement: true,
         primaryKey: true
       },
-      amount: {
-        type: Sequelize.DOUBLE,
+      totp: {
+        type: Sequelize.STRING(512),
         allowNull: false
       },
-      exchange_wallet_id: {
+      user_id: {
         type: Sequelize.BIGINT.UNSIGNED,
         allowNull: false,
         references: {
-          model: 'exchange_wallet',
-          key: 'id'
-        }
-      },
-      currency_id: {
-        type: Sequelize.BIGINT.UNSIGNED,
-        allowNull: false,
-        references: {
-          model: 'currency',
+          model: 'user',
           key: 'id'
         }
       },
@@ -38,6 +30,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('currency_amount');
+    return queryInterface.dropTable('user_totp');
   }
 };

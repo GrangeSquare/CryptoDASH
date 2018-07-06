@@ -8,7 +8,7 @@ module.exports = (sequelize, dataTypes) => {
       primaryKey: true
     },
     amount: {
-      type: dataTypes.BIGINT.UNSIGNED,
+      type: dataTypes.DOUBLE,
       allowNull: false
     }
   }, {

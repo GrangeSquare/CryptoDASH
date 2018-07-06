@@ -1,22 +1,30 @@
 const utils = require('../utils');
 const usersService = require('../services/users');
-const Response = require('../utils/response');
 const { AuthenticationError } = require('../utils/errors');
 const authc = require('./authc');
+const Response = require('../utils/response');
 
 module.exports = {
   register,
   login,
-  registerUserCredentials
+  login1,
+  logout,
+  registerUserCredentials,
+  setUserAccountBalance,
+  getUserAccountBalance
 };
 
 async function register (req, res, next) {
   try {
     const request = utils.getSubset([
-      'email', 'first_name', 'last_name', 'address', 'password'
+      'email', 'first_name', 'last_name', 'address'
     ], req.body);
 
-    await usersService.register(request);
+    const context = {
+      totpToken: req.body.token
+    };
+
+    await usersService.register(context, request, req.body.password, req.body.secret);
 
     res.status(201).end();
   } catch (err) {
@@ -50,4 +58,38 @@ async function registerUserCredentials (req, res, next) {
   } catch (err) {
     next(new AuthenticationError(err));
   }
+}
+
+async function setUserAccountBalance (req, res, next) {
+  try {
+    await usersService.setUserAccountBalance(req.params.id);
+    res.status(200).end();
+  } catch (err) {
+    console.log(err);
+    next(new AuthenticationError(err));
+  }
+}
+
+async function getUserAccountBalance (req, res, next) {
+  try {
+    const amountObj = await usersService.getUserAccountBalance(req.params.id);
+    res.send(amountObj);
+    res.status(200).end();
+  } catch (err) {
+    console.log(err);
+    next(new AuthenticationError(err));
+  }
+}
+
+async function login1 (req, res, next) {
+  authc.setTotpValidated(req);
+  res.status(200).send(Response.success(null));
+  res.end();
+}
+
+async function logout (req, res, next) {
+  authc.destroy(req);
+  res.status(200);
+  res.send(Response.success(null));
+  res.end();
 }

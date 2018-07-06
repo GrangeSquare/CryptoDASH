@@ -2,10 +2,12 @@
 
 const db = require('../models');
 const passwords = require('../utils/passwords');
+const totp = require('./totp');
 
 module.exports = {
   checkPassword,
-  getUserAuth
+  getUserAuth,
+  checkTotpToken
 };
 async function checkPassword (userId, password) {
   const UserAuth = await getUserAuth(userId);
@@ -27,4 +29,32 @@ async function getUserAuth (userId) {
   });
 
   return result;
+}
+
+async function checkTotpToken (userId, token) {
+  const userTotp = await getUserTotp(userId);
+
+  if (!userTotp) {
+    return false;
+  }
+
+  const secret = userTotp.get('secret');
+
+  const ok = await totp.validateToken(secret, token);
+
+  if (!ok) {
+    return false;
+  }
+
+  return true;
+}
+
+async function getUserTotp (userId) {
+  const totp = await db.UserTotp.findOne({
+    where: {
+      user_id: userId
+    }
+  });
+
+  return totp;
 }
