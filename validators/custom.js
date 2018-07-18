@@ -10,7 +10,8 @@ module.exports = {
   validateUserEmail,
   checkWalletNotExist,
   validateTotpToken,
-  validateTotp
+  validateTotp,
+  checkPasswordChangeHash
 };
 
 const digitsRegexp = new RegExp('[0-9]');
@@ -71,6 +72,14 @@ async function validateTotp (token, {req}) {
   const ok = await authServices.checkTotpToken(userId, token);
 
   if (!ok) {
+    throw new Error();
+  }
+}
+
+async function checkPasswordChangeHash (hash, {req}) {
+  const userIdHash = userServices.getPasswordResetEmailHash(req.body.user_id);
+
+  if (userIdHash !== hash) {
     throw new Error();
   }
 }

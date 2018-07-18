@@ -1,8 +1,9 @@
-const utils = require('../utils');
+const utils = require('../utils/utils');
 const usersService = require('../services/users');
 const { AuthenticationError } = require('../utils/errors');
 const authc = require('./authc');
 const Response = require('../utils/response');
+const authService = require('../services/auth');
 
 module.exports = {
   register,
@@ -11,7 +12,9 @@ module.exports = {
   logout,
   registerUserCredentials,
   setUserAccountBalance,
-  getUserAccountBalance
+  getUserAccountBalance,
+  initPasswordChange,
+  changePassForgotten
 };
 
 async function register (req, res, next) {
@@ -92,4 +95,25 @@ async function logout (req, res, next) {
   res.status(200);
   res.send(Response.success(null));
   res.end();
+}
+
+async function initPasswordChange (req, res, next) {
+  const userId = req.params.id;
+
+  try {
+    await usersService.initPasswordChange(userId);
+    await usersService.sendPasswordResetEmail(userId);
+    res.status(200).end();
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function changePassForgotten (req, res, next) {
+  try {
+    await authService.changePassForgotten(req.body.user_id, req.body.change_token, req.body.new_password);
+    res.status(200).end();
+  } catch (err) {
+    next(err);
+  }
 }

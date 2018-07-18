@@ -1,6 +1,6 @@
 'user strict';
 
-const utils = require('../utils');
+const utils = require('../utils/utils');
 const services = require('../services/users');
 
 async function verify (req, res, next) {

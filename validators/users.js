@@ -10,6 +10,25 @@ const idParamValidation = function (idName = 'id') {
   ];
 };
 
+const idBodyValidation = function (idName = 'id') {
+  return [ body(idName)
+    .trim()
+    .not().isEmpty().withMessage(vk('req'))
+    .isInt([ {min: 1} ]).withMessage(vk('num'))
+  ];
+};
+
+function validateTotpToken (tokenName, secretName) {
+  return [
+    body(tokenName)
+      .trim()
+      .not().isEmpty().withMessage(vk('token_req'))
+      .custom(custom.validateTotpToken(secretName)).withMessage(vk('token_auth')),
+    body(secretName)
+      .not().isEmpty().withMessage(vk('token_secret'))
+  ];
+}
+
 const register = [
   body('email')
     .trim()
@@ -33,17 +52,6 @@ const register = [
     .not().isEmpty().withMessage(vk('ln_req'))
     .isLength({ max: 64 }).withMessage(vk('ln_long'))
 ];
-
-function validateTotpToken (tokenName, secretName) {
-  return [
-    body(tokenName)
-      .trim()
-      .not().isEmpty().withMessage(vk('token_req'))
-      .custom(custom.validateTotpToken(secretName)).withMessage(vk('token_auth')),
-    body(secretName)
-      .not().isEmpty().withMessage(vk('token_secret'))
-  ];
-}
 
 const register2 = validateTotpToken('token', 'secret');
 
@@ -91,6 +99,24 @@ const getBalance = [
   idParamValidation('id')
 ];
 
+const passChangeForgotten = [
+  body('new_password')
+    .not().isEmpty().withMessage(vk('pass_req'))
+    .isLength({ min: 8 }).withMessage(vk('pass_min'))
+    .custom(custom.hasDigits).withMessage(vk('pass_digits')),
+  body('confirmed_new')
+    .not().isEmpty().withMessage(vk('pass_req'))
+    .isLength({ min: 8 }).withMessage(vk('pass_min'))
+    .custom(custom.hasDigits).withMessage(vk('pass_digits'))
+    .custom(custom.isEqual('new_password')).withMessage(vk('pass_equal')),
+  body('change_token')
+    .not().isEmpty().withMessage(vk('pass_req')),
+  body('hash')
+    .not().isEmpty().withMessage(vk('pass_req'))
+    .custom(custom.checkPasswordChangeHash).withMessage(vk('invalid_hash')),
+  idBodyValidation('user_id')
+];
+
 module.exports = {
   register,
   login,
@@ -98,5 +124,6 @@ module.exports = {
   setBalance,
   getBalance,
   register2,
-  login1
+  login1,
+  passChangeForgotten
 };

@@ -27,8 +27,11 @@ router.post(`${baseUrl}/users/logout`, userRoutes.logout);
 
 router.post(`${baseUrl}/users/:id/exchange/:exchangeId`, val.users.registerUserCredentials, authc.service, authc.user, userRoutes.registerUserCredentials);
 
+// action endpoints
 router.post(`${baseUrl}/users/:id/set_balance`, authc.service, authc.user, val.users.setBalance, userRoutes.setUserAccountBalance);
 router.get(`${baseUrl}/users/:id/get_balance`, authc.service, authc.user, val.users.getBalance, userRoutes.getUserAccountBalance);
+router.post(`${baseUrl}/users/:id/actions/init_password_change`, /* authc.service, */ userRoutes.initPasswordChange);
+router.post(`${baseUrl}/users/actions/change_password`, val.users.passChangeForgotten, userRoutes.changePassForgotten);
 
 // utility endpoints
 router.get(`${baseUrl}/utils/email_verification/`, email.verify);

@@ -1,8 +1,13 @@
 {
     "scripts": {
+        "name": "CryptoDASH",
+        "version": "0.0.1",
+        "description": "",
+        "main": "app.js",
         "format": "sequelize db:migrate:undo:all && sequelize db:migrate && sequelize db:seed:all"
     },
     "dependencies": {
+        "axios": "^0.18.0",
         "binance-api-node": "^0.8.2",
         "bittrex-api-node": "0.0.6",
         "cors": "^2.8.4",
@@ -15,6 +20,7 @@
         "mailsender": "^1.1.2",
         "mysql2": "^1.5.3",
         "node-binance-api": "^0.7.4",
+        "querystring": "^0.2.0",
         "sequelize": "^4.38.0",
         "speakeasy": "^2.0.0"
     }

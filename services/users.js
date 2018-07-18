@@ -3,11 +3,14 @@
 const db = require('../models');
 const passwords = require('../utils/passwords');
 const auth = require('./auth');
-const utils = require('../utils');
+const utils = require('../utils/utils');
 const exchanges = require('../exchanges');
 const currencyList = require('../utils/currencyList');
 const hmac = require('../utils/hmac');
 const emailSender = require('./email');
+const config = require('../config');
+const url = require('url');
+const querystring = require('querystring');
 
 module.exports = {
   register,
@@ -17,11 +20,14 @@ module.exports = {
   getWallet,
   setUserAccountBalance,
   getUserAccountBalance,
-  verifyEmail
+  verifyEmail,
+  initPasswordChange,
+  sendPasswordResetEmail,
+  getPasswordResetEmailHash
 };
 
 const sessionProperties = ['id', 'email'];
-const {EMAIL_SECRET} = process.env;
+const {EMAIL_SECRET, WEB_APP_BASE_URL, PASS_CHANGE_PATH} = process.env;
 
 async function register (context, request, password, totpSecret) {
   try {
@@ -188,22 +194,37 @@ async function setUserAccountBalance (userId, walletId = undefined) {
 
 async function getUserAccountBalance (userId) {
   const queryObj = {
-    user_id: userId
+    id: userId
   };
 
-  const amount = await db.Currency.findAll({
-    raw: true,
+  const user = await db.User.findOne({
+    where: queryObj,
     include: [{
-      model: db.CurrencyAmount,
+      model: db.ExchangeWallet,
       required: true,
-      attributes: ['amount'],
       include: [{
-        model: db.ExchangeWallet,
-        where: queryObj
-      }]
-    }]
+        model: db.Exchange,
+        required: true,
+        attributes: ['name']
+      }, {
+        model: db.CurrencyAmount,
+        required: true,
+        include: [{
+          model: db.Currency,
+          required: true,
+          attributes: ['symbol']
+        }],
+        attributes: ['amount']
+      }],
+      attributes: {
+        exclude: ['created_at', 'updated_at', 'exchange_id', 'user_id']
+      }
+    }],
+    attributes: {
+      exclude: ['email_confirmed', 'created_at', 'updated_at']
+    }
   });
-  return amount;
+  return user;
 }
 
 async function removeWalletBalance (walletId) {
@@ -228,4 +249,59 @@ async function verifyEmail (data) {
       email: data.email
     }
   });
+}
+
+async function initPasswordChange (userId) {
+  const resetInfo = {
+    change_token: utils.getPasswordChangeSecret(),
+    change_timeframe: Date.now() + (config.constants.passwordChangeWindowMins * 60 * 1000)
+  };
+
+  const result = await db.UserAuth.update(resetInfo, {
+    where: {
+      user_id: userId
+    }
+  });
+
+  if (!result[0]) {
+    throw new Error();
+  }
+}
+
+async function sendPasswordResetEmail (userId) {
+  const user = await getUserWithAuth(userId);
+  const auth = user.get('UserAuth');
+
+  const changeUrl = url.resolve(WEB_APP_BASE_URL, PASS_CHANGE_PATH);
+
+  const changeQuery = querystring.stringify({
+    user_id: userId,
+    secret: auth.change_token,
+    hash: getPasswordResetEmailHash(userId)
+  });
+
+  const emailData = {
+    link: [changeUrl, changeQuery].join('?'),
+    toAddress: user.get('email')
+  };
+
+  await emailSender.sendEmail(emailData);
+}
+
+async function getUserWithAuth (id) {
+  const user = await db.User.findOne({
+    where: {
+      id: id
+    },
+    include: [{
+      model: db.UserAuth,
+      required: true
+    }]
+  });
+
+  return user;
+}
+
+function getPasswordResetEmailHash (userId) {
+  return hmac.digestHex(EMAIL_SECRET, Buffer.from('' + userId));
 }

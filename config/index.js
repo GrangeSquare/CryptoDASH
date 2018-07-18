@@ -31,7 +31,10 @@ const config = {
   },
   constants: { // todo: authOptions?
     passwordMissesAllowed: 10,
-    totpMissesAllowed: 10
+    totpMissesAllowed: 10,
+    totpChangeWindowMins: 1440, // 1 day
+    passwordChangeWindowMins: 1440, // 1 day
+    totpWindow: 1
   }
 };
 

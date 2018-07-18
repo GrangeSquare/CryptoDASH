@@ -7,7 +7,7 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true
       },
-      totp: {
+      secret: {
         type: Sequelize.STRING(512),
         allowNull: false
       },

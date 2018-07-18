@@ -3,11 +3,14 @@
 const db = require('../models');
 const passwords = require('../utils/passwords');
 const totp = require('./totp');
+const { AuthorizationError } = require('../utils/errors');
+const ctx = require('../utils/ctx');
 
 module.exports = {
   checkPassword,
   getUserAuth,
-  checkTotpToken
+  checkTotpToken,
+  changePassForgotten
 };
 async function checkPassword (userId, password) {
   const UserAuth = await getUserAuth(userId);
@@ -57,4 +60,86 @@ async function getUserTotp (userId) {
   });
 
   return totp;
+}
+
+async function changePassForgotten (userId, receivedPassChangeToken, newPassword) {
+  if (!userId) {
+    throw new AuthorizationError();
+  }
+
+  const userAuth = await getUserAuth(userId);
+
+  if (!userAuth) {
+    throw new AuthorizationError();
+  }
+
+  const changeToken = userAuth.get('change_token');
+  const changeTimeframe = userAuth.get('change_timeframe');
+
+  if (!changeToken || !changeTimeframe || (receivedPassChangeToken !== changeToken)) {
+    throw new AuthorizationError();
+  }
+
+  const timeframe = +changeTimeframe;
+  if (Date.now() > timeframe) {
+    throw new AuthorizationError();
+  }
+
+  await db.sequelize.transaction(async t => {
+    const context = {
+      tx: t
+    };
+
+    await Promise.all([
+      ctx.wrapInTx(context, resetPassword, userId, newPassword),
+      ctx.wrapInTx(context, disablePassChange, userId),
+      ctx.wrapInTx(context, resetPasswordAttempts, userAuth)
+    ]);
+  });
+}
+
+async function resetPassword (context, userId, newPassword) {
+  const newHash = await passwords.createHashHex(newPassword);
+  const result = await db.UserAuth.update({
+    hash: newHash
+  }, {
+    where: {
+      user_id: userId
+    },
+    transaction: context.tx
+  });
+
+  if (!result[0]) {
+    throw new Error();
+  }
+}
+
+async function disablePassChange (context, userId) {
+  const resetInfo = {
+    change_token: null,
+    change_timeframe: null,
+    change_counter: null
+  };
+
+  const result = await db.UserAuth.update(resetInfo, {
+    where: {
+      user_id: userId
+    },
+    transaction: context.tx
+  });
+
+  if (!result[0]) {
+    throw new Error();
+  }
+}
+
+function resetPasswordAttempts (context, UserAuth) {
+  UserAuth.set('attempt_counter', 0);
+  UserAuth.set('last_attempt_time', 0);
+
+  const options = {
+    transaction: context.tx
+  };
+
+  UserAuth.save(options);
 }
