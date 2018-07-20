@@ -23,11 +23,14 @@ module.exports = {
   verifyEmail,
   initPasswordChange,
   sendPasswordResetEmail,
-  getPasswordResetEmailHash
+  getPasswordResetEmailHash,
+  initTotpChange,
+  sendTotpResetEmail,
+  getTotpResetEmailHash
 };
 
 const sessionProperties = ['id', 'email'];
-const {EMAIL_SECRET, WEB_APP_BASE_URL, PASS_CHANGE_PATH} = process.env;
+const {EMAIL_SECRET, WEB_APP_BASE_URL, PASS_CHANGE_PATH, TOTP_CHANGE_PATH} = process.env;
 
 async function register (context, request, password, totpSecret) {
   try {
@@ -304,4 +307,64 @@ async function getUserWithAuth (id) {
 
 function getPasswordResetEmailHash (userId) {
   return hmac.digestHex(EMAIL_SECRET, Buffer.from('' + userId));
+}
+
+function getTotpResetEmailHash (userId) {
+  return hmac.digestHex(EMAIL_SECRET, Buffer.from('' + userId));
+}
+
+async function initTotpChange (userId) {
+  const resetInfo = {
+    change_token: utils.getTotpChangeSecret(),
+    change_timeframe: Date.now() + (config.constants.totpChangeWindowMins * 60 * 1000)
+  };
+
+  const result = await db.UserTotp.update(resetInfo, {
+    where: {
+      user_id: userId
+    }
+  });
+
+  if (!result[0]) {
+    throw new Error();
+  }
+}
+
+async function sendTotpResetEmail (userId) {
+  const user = await getUserWithTotp(userId);
+
+  const totp = user.get('UserTotp');
+
+  var changeUrl = url.resolve(WEB_APP_BASE_URL, TOTP_CHANGE_PATH);
+  const changeQuery = querystring.stringify({
+    user_id: userId,
+    secret: totp.change_token,
+    hash: getTotpResetEmailHash(userId)
+  });
+
+  const emailOptions = {
+    firstName: user.get('first_name'),
+    lastName: user.get('last_name')
+  };
+
+  const emailData = {
+    toAddress: user.get('email'),
+    link: [changeUrl, changeQuery].join('?')
+  };
+
+  emailSender.sendEmail(emailData, emailOptions);
+}
+
+async function getUserWithTotp (id, attributes = undefined) {
+  const user = await db.User.findOne({
+    where: {
+      id: id
+    },
+    attributes: attributes,
+    include: [{
+      model: db.UserTotp,
+      required: true
+    }]
+  });
+  return user;
 }

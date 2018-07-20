@@ -14,7 +14,9 @@ module.exports = {
   setUserAccountBalance,
   getUserAccountBalance,
   initPasswordChange,
-  changePassForgotten
+  changePassForgotten,
+  initTotpChange,
+  changeTotpForgotten
 };
 
 async function register (req, res, next) {
@@ -112,6 +114,27 @@ async function initPasswordChange (req, res, next) {
 async function changePassForgotten (req, res, next) {
   try {
     await authService.changePassForgotten(req.body.user_id, req.body.change_token, req.body.new_password);
+    res.status(200).end();
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function initTotpChange (req, res, next) {
+  const userId = +req.params.id;
+
+  try {
+    await usersService.initTotpChange(userId);
+    await usersService.sendTotpResetEmail(userId);
+    res.status(200).end();
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function changeTotpForgotten (req, res, next) {
+  try {
+    await authService.changeTotpForgotten(req.body.user_id, req.body.change_token, req.body.secret);
     res.status(200).end();
   } catch (err) {
     next(err);

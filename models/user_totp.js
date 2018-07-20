@@ -10,6 +10,24 @@ module.exports = (sequelize, dataTypes) => {
     secret: {
       type: dataTypes.STRING(512),
       allowNull: false
+    },
+    change_token: {
+      type: dataTypes.STRING(64),
+      allowNull: true
+    },
+    change_timeframe: {
+      type: dataTypes.BIGINT.UNSIGNED,
+      allowNull: true
+    },
+    attempt_counter: {
+      type: dataTypes.BIGINT.UNSIGNED,
+      defaultValue: 0,
+      allowNull: true
+    },
+    last_attempt_time: {
+      type: dataTypes.BIGINT.UNSIGNED,
+      defaultValue: 0,
+      allowNull: true
     }
   }, {
     underscored: true,

@@ -30,8 +30,10 @@ router.post(`${baseUrl}/users/:id/exchange/:exchangeId`, val.users.registerUserC
 // action endpoints
 router.post(`${baseUrl}/users/:id/set_balance`, authc.service, authc.user, val.users.setBalance, userRoutes.setUserAccountBalance);
 router.get(`${baseUrl}/users/:id/get_balance`, authc.service, authc.user, val.users.getBalance, userRoutes.getUserAccountBalance);
-router.post(`${baseUrl}/users/:id/actions/init_password_change`, /* authc.service, */ userRoutes.initPasswordChange);
+router.post(`${baseUrl}/users/:id/actions/init_password_change`, authc.service, userRoutes.initPasswordChange);
 router.post(`${baseUrl}/users/actions/change_password`, val.users.passChangeForgotten, userRoutes.changePassForgotten);
+router.post(`${baseUrl}/users/:id/actions/init_totp_change`, authc.service, userRoutes.initTotpChange);
+router.post(`${baseUrl}/users/actions/change_totp`, val.users.totpChangeForgotten, userRoutes.changeTotpForgotten);
 
 // utility endpoints
 router.get(`${baseUrl}/utils/email_verification/`, email.verify);

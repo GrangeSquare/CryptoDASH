@@ -19,6 +19,10 @@ function getPasswordChangeSecret () {
   return getRandomString(64);
 }
 
+function getTotpChangeSecret () {
+  return getRandomString(64);
+}
+
 function getRandomString (length) {
   return crypto.randomBytes(length).toString('hex');
 }
@@ -27,5 +31,6 @@ module.exports = {
   coinList,
   getPasswordChangeSecret,
   getSubset,
-  invert
+  invert,
+  getTotpChangeSecret
 };

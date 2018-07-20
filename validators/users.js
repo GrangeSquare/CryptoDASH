@@ -117,6 +117,20 @@ const passChangeForgotten = [
   idBodyValidation('user_id')
 ];
 
+const totpChangeForgotten = [
+  validateTotpToken('token', 'secret'),
+  body('password')
+    .not().isEmpty().withMessage(vk('pass_req'))
+    .isLength({ min: 8 }).withMessage(vk('pass_min'))
+    .custom(custom.totpCheckPassword).withMessage(vk('pass_incorrect')),
+  body('change_token')
+    .not().isEmpty().withMessage(vk('pass_req')),
+  idBodyValidation('user_id'),
+  body('hash')
+    .not().isEmpty().withMessage(vk('hash_req'))
+    .custom(custom.checkTotpChangeHash).withMessage(vk('invalid_hash'))
+];
+
 module.exports = {
   register,
   login,
@@ -125,5 +139,7 @@ module.exports = {
   getBalance,
   register2,
   login1,
-  passChangeForgotten
+  passChangeForgotten,
+  validateTotpToken,
+  totpChangeForgotten
 };

@@ -10,7 +10,8 @@ module.exports = {
   checkPassword,
   getUserAuth,
   checkTotpToken,
-  changePassForgotten
+  changePassForgotten,
+  changeTotpForgotten
 };
 async function checkPassword (userId, password) {
   const UserAuth = await getUserAuth(userId);
@@ -142,4 +143,85 @@ function resetPasswordAttempts (context, UserAuth) {
   };
 
   UserAuth.save(options);
+}
+
+async function changeTotpForgotten (userId, receivedChangeToken, secret) {
+  if (!userId) {
+    throw new AuthorizationError();
+  }
+
+  const userTotp = await getUserTotp(userId);
+
+  if (!userTotp) {
+    throw new AuthorizationError();
+  }
+
+  const changeToken = userTotp.get('change_token');
+  const changeTimeframe = userTotp.get('change_timeframe');
+
+  if (!changeToken || !changeTimeframe || (receivedChangeToken !== changeToken)) {
+    throw new AuthorizationError();
+  }
+
+  const timeframe = +changeTimeframe;
+  if (Date.now() > timeframe) {
+    throw new AuthorizationError();
+  }
+
+  await db.sequelize.transaction(async t => {
+    const context = {
+      tx: t
+    };
+
+    await Promise.all([
+      ctx.wrapInTx(context, setTotp, userId, secret),
+      ctx.wrapInTx(context, disableTotpChange, userId),
+      ctx.wrapInTx(context, resetTotpAttempts, userTotp)
+    ]);
+  });
+}
+
+async function setTotp (context, userId, secret) {
+  const result = await db.UserTotp.update({
+    secret: secret
+  }, {
+    where: {
+      user_id: userId
+    },
+    transaction: context.tx
+  });
+
+  if (!result[0]) {
+    throw new Error();
+  }
+}
+
+async function disableTotpChange (context, userId) {
+  const resetInfo = {
+    change_token: null,
+    change_timeframe: null,
+    change_counter: null
+  };
+
+  const result = await db.UserTotp.update(resetInfo, {
+    where: {
+      user_id: userId
+    },
+    transaction: context.tx
+  });
+
+  if (!result[0]) {
+    throw new Error();
+  }
+}
+
+function resetTotpAttempts (context, UserTotp) {
+  UserTotp.set('attempt_counter', 0);
+  UserTotp.set('last_attempt_time', 0);
+
+  const options = {
+    transaction: context.tx
+  };
+
+  UserTotp.save(options);
 }
