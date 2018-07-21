@@ -9,6 +9,7 @@ const session = require('./session');
 const authc = require('./authc');
 const resources = require('./resources');
 const email = require('./email');
+const periodRepetition = require('./periodRepetition');
 
 const router = express.Router();
 
@@ -34,6 +35,7 @@ router.post(`${baseUrl}/users/:id/actions/init_password_change`, authc.service, 
 router.post(`${baseUrl}/users/actions/change_password`, val.users.passChangeForgotten, userRoutes.changePassForgotten);
 router.post(`${baseUrl}/users/:id/actions/init_totp_change`, authc.service, userRoutes.initTotpChange);
 router.post(`${baseUrl}/users/actions/change_totp`, val.users.totpChangeForgotten, userRoutes.changeTotpForgotten);
+router.get(`${baseUrl}/get_period_repetition/:name`, periodRepetition.getRepetition);
 
 // utility endpoints
 router.get(`${baseUrl}/utils/email_verification/`, email.verify);
