@@ -168,7 +168,7 @@ async function calculateAndInsertPrice (coinData, coinValueInUSD, date, coinSymb
   const BTCValueOnDate = dailyPriceBTC[date];
   const ETHValueOnDate = dailyPriceETH[date];
   if (!BTCValueOnDate || !ETHValueOnDate) {
-    console.log("BTCValueOnDate || ETHValueOnDate MISSING!!!!");
+    console.log('BTCValueOnDate || ETHValueOnDate MISSING!!!!');
     return;
   }
   coinValueInUSD = new BigNumber(coinValueInUSD);
