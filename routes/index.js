@@ -9,6 +9,7 @@ const session = require('./session');
 const authc = require('./authc');
 const resources = require('./resources');
 const email = require('./email');
+const post = require('./post');
 
 const router = express.Router();
 
@@ -40,6 +41,7 @@ router.get(`${baseUrl}/utils/email_verification/`, email.verify);
 
 // resourses for front
 router.get(`${baseUrl}/resources/`, resources.getResources);
+router.get(`${baseUrl}/getPosts`, post.getPosts);
 
 router.use(h.error);
 
