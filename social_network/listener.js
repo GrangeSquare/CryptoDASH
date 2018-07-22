@@ -2,7 +2,7 @@
 
 const listenerDB = require('./services/post');
 
-async function lisenerEvents (req, res, next) {
+async function listenerEvents (req, res, next) {
   try {
     const data = JSON.parse(req.query.json);
     await listenerDB.putInDatabase(data);
@@ -13,5 +13,5 @@ async function lisenerEvents (req, res, next) {
 }
 
 module.exports = {
-  lisenerEvents
+  listenerEvents
 };
