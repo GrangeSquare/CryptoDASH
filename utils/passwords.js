@@ -39,4 +39,3 @@ async function check (password, hash) {
 
   return false;
 }
-

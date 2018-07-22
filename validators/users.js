@@ -51,7 +51,19 @@ const register = [
     .trim()
     .not().isEmpty().withMessage(vk('ln_req'))
     .isLength({ max: 64 }).withMessage(vk('ln_long'))
+
 ];
+
+function validateTotpToken (tokenName, secretName) {
+  return [
+    body(tokenName)
+      .trim()
+      .not().isEmpty().withMessage(vk('token_req'))
+      .custom(custom.validateTotpToken(secretName)).withMessage(vk('token_auth')),
+    body(secretName)
+      .not().isEmpty().withMessage(vk('token_secret'))
+  ];
+}
 
 const register2 = validateTotpToken('token', 'secret');
 
