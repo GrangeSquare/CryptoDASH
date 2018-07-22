@@ -2,7 +2,7 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    const currencyList = require('../utils/currencyList');
+    const currencyList = require('../utils/currency_list');
     const bulkInsertArr = [];
 
     for (let i in currencyList) {

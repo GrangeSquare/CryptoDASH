@@ -5,7 +5,7 @@ const passwords = require('../utils/passwords');
 const auth = require('./auth');
 const utils = require('../utils');
 const exchanges = require('../exchanges');
-const currencyList = require('../utils/currencyList');
+const currencyList = require('../utils/currency_list');
 
 module.exports = {
   register,
@@ -185,6 +185,7 @@ async function getUserAccountBalance (userId) {
       }]
     }]
   });
+
   return amount;
 }
 
