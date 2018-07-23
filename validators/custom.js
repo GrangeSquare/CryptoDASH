@@ -100,8 +100,7 @@ async function totpCheckPassword (val, {req}) {
 
 async function checkTotpChangeHash (hash, {req}) {
   const userIdHash = userServices.getTotpResetEmailHash(req.body.user_id);
-  console.log(userIdHash);
-  console.log(hash);
+
   if (userIdHash !== hash) {
     throw new Error();
   }
