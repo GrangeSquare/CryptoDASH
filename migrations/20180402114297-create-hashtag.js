@@ -11,6 +11,14 @@ module.exports = {
         type: Sequelize.STRING(64),
         allowNull: false
       },
+      currency_id: {
+        type: Sequelize.BIGINT.UNSIGNED,
+        allowNull: false,
+        references: {
+          model: 'currency',
+          key: 'id'
+        }
+      },
       created_at: {
         allowNull: false,
         type: Sequelize.DATE

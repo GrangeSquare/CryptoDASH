@@ -1,13 +1,17 @@
 'use strict';
 
 const axios = require('./config');
-const countHashtagService = require('../services/count_hashtag');
-
-// setInterval(setCountOfHashtags, 5000);
+const hashtagCounterService = require('../services/hashtag_counter');
+const hashtags = require('./resources');
+const clientId = process.env.CLIENT_ID;
 
 async function setCountOfHashtags () {
-  const dataFromAxios = await axios.get('multiple-hashtags?tags=btc,eth,ltc,nmc&client_id=23caa092a902a76400b6f833dac753f2b20a2e18761e');
-  countHashtagService.setCountOfHashtags(dataFromAxios);
+  const dataFromAxios = await axios.get('multiple-hashtags?tags=' + hashtags + '&client_id=' + clientId);
+  hashtagCounterService.setCountOfHashtags(dataFromAxios);
+  console.log('END!');
 }
 
 setCountOfHashtags();
+
+// todo: set interval
+// setInterval(setCountOfHashtags, 20000);

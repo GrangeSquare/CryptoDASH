@@ -9,6 +9,10 @@ module.exports = (sequelize, dataTypes) => {
     },
     name: {
       type: dataTypes.STRING(64),
+      allowNull: true
+    },
+    currency_id: {
+      type: dataTypes.BIGINT.UNSIGNED,
       allowNull: false
     }
   }, {
@@ -20,7 +24,14 @@ module.exports = (sequelize, dataTypes) => {
   });
 
   Hashtag.associate = function (models) {
-    models.Hashtag.hasMany(models.CountHashtag, { foreignKey: { allowNull: false } });
+    models.Hashtag.belongsTo(models.Currency, {
+      onDelete: 'CASCADE', // todo: FK is on delete 'set null', and column is null
+      foreignKey: {
+        allowNull: false
+      }
+    });
+    models.Hashtag.hasMany(models.HashtagCounter, { foreignKey: { allowNull: false } });
   };
+
   return Hashtag;
 };

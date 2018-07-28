@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = (sequelize, dataTypes) => {
-  var CountHashtag = sequelize.define('CountHashtag', {
+  var HashtagCounter = sequelize.define('HashtagCounter', {
     id: {
       type: dataTypes.BIGINT.UNSIGNED,
       autoIncrement: true,
@@ -13,23 +13,24 @@ module.exports = (sequelize, dataTypes) => {
     },
     hashtag_id: {
       type: dataTypes.BIGINT.UNSIGNED,
-      allowNull: true
+      allowNull: false
     }
   }, {
     underscored: true,
     freezeTableName: true,
-    tableName: 'count_hashtag',
+    tableName: 'hashtag_counter',
     charset: 'utf8',
     collate: 'utf8_unicode_ci'
   });
 
-  CountHashtag.associate = function (models) {
-    models.CountHashtag.belongsTo(models.Hashtag, {
+  HashtagCounter.associate = function (models) {
+    models.HashtagCounter.belongsTo(models.Hashtag, {
       onDelete: 'CASCADE', // todo: FK is on delete 'set null', and column is null
       foreignKey: {
         allowNull: false
       }
     });
   };
-  return CountHashtag;
+
+  return HashtagCounter;
 };

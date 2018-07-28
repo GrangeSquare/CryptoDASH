@@ -10,6 +10,7 @@ const authc = require('./authc');
 const resources = require('./resources');
 const email = require('./email');
 const post = require('./post');
+const hashtagCounter = require('./hashtag_counter');
 
 const router = express.Router();
 
@@ -41,7 +42,9 @@ router.get(`${baseUrl}/utils/email_verification/`, email.verify);
 
 // resourses for front
 router.get(`${baseUrl}/resources/`, resources.getResources);
-router.get(`${baseUrl}/getPosts`, post.getPosts);
+router.get(`${baseUrl}/get_posts`, post.getPosts);
+router.get(`${baseUrl}/get_hashtags_by_day/:day`, hashtagCounter.getStatusByDay);
+router.get(`${baseUrl}/get_count_hashtags/:day`, hashtagCounter.getCountByDay);
 
 router.use(h.error);
 

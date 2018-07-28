@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('count_hashtag', {
+    return queryInterface.createTable('hashtag_counter', {
       id: {
         type: Sequelize.BIGINT.UNSIGNED,
         autoIncrement: true,
@@ -13,7 +13,11 @@ module.exports = {
       },
       hashtag_id: {
         type: Sequelize.BIGINT.UNSIGNED,
-        allowNull: false
+        allowNull: false,
+        references: {
+          model: 'hashtag',
+          key: 'id'
+        }
       },
       created_at: {
         allowNull: false,
@@ -26,6 +30,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('count_hashtag');
+    return queryInterface.dropTable('hashtag_counter');
   }
 };
