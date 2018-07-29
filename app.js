@@ -10,13 +10,14 @@ const { PORT, WEB_APP_BASE_URL } = process.env;
 
 const app = express();
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 app.use('/', routes);
 app.disable('x-powered-by');
-app.use(cors({
-  'origin': WEB_APP_BASE_URL,
-  'credentials': true,
-  'methods': 'GET,HEAD,PUT,PATCH,POST,DELETE'
-}));
 
 const server = http.createServer(app);
 
