@@ -11,7 +11,4 @@ async function setCountOfHashtags () {
   console.log('END!');
 }
 
-setCountOfHashtags();
-
-// todo: set interval
-// setInterval(setCountOfHashtags, 20000);
+setInterval(setCountOfHashtags, 3600000);
