@@ -689,6 +689,7 @@ module.exports = {
     old_pass_incorrect: 'old password is incorrect',
     api_key_invalid: 'api key is invalid',
     api_key_secret_invalid: 'secret api key is invalid',
-    wallet_exists: 'wallet already exists'
+    wallet_exists: 'wallet already exists',
+    hashtag_exist: 'hashtag doesn`t exist'
   }
 };

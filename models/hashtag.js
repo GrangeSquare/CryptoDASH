@@ -31,6 +31,7 @@ module.exports = (sequelize, dataTypes) => {
       }
     });
     models.Hashtag.hasMany(models.HashtagCounter, { foreignKey: { allowNull: false } });
+    models.Hashtag.hasMany(models.Comment, { foreignKey: { allowNull: false } });
   };
 
   return Hashtag;
