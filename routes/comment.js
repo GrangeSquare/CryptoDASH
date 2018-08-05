@@ -6,23 +6,11 @@ const utils = require('../utils/utils');
 async function setComment (req, res, next) {
   try {
     const params = utils.getSubset([
-      'title', 'text', 'hashtag', 'user_id'
+      'title', 'text', 'hashtag_id', 'user_id', 'reply_id'
     ], req.body);
 
     await commentService.setComment(params);
-    res.status(201).end();
-  } catch (err) {
-    next(err);
-  }
-}
 
-async function setCommentReply (req, res, next) {
-  try {
-    const params = utils.getSubset([
-      'title', 'text', 'comment_id', 'user_id'
-    ], req.body);
-
-    await commentService.setCommentReply(params);
     res.status(201).end();
   } catch (err) {
     next(err);
@@ -40,6 +28,5 @@ async function getCommentsByHashtag (req, res, next) {
 
 module.exports = {
   setComment,
-  setCommentReply,
   getCommentsByHashtag
 };

@@ -1,34 +1,33 @@
 'use strict';
 
-const { body } = require('express-validator/check');
-const custom = require('./custom');
+const { body, query } = require('express-validator/check');
 const { vk } = require('../resources');
+const custom = require('./custom');
 
 const setComment = [
-  body('title'),
+  body('reply_id')
+    .custom(custom.checkReplyId).withMessage(vk('reqly_req')),
+  body('title')
+    .not().isEmpty().withMessage(vk('title_req'))
+    .isLength({ max: 128 }).withMessage(vk('mail_long')),
   body('text')
-    .not().isEmpty().withMessage(vk('pass_req')),
-  body('hashtag')
     .not().isEmpty().withMessage(vk('pass_req'))
-    .custom(custom.checkHashtag).withMessage(vk('hashtag_exist')),
+    .isLength({ max: 512 }).withMessage(vk('mail_long')),
+  body('hashtag_id')
+    .not().isEmpty().withMessage(vk('hashtag_req'))
+    .isInt([ {min: 1} ]).withMessage(vk('num')),
   body('user_id')
-    .not().isEmpty().withMessage(vk('pass_req'))
+    .not().isEmpty().withMessage(vk('user_req'))
     .isInt([ {min: 1} ]).withMessage(vk('num'))
 ];
 
-const setCommentReply = [
-  body('title'),
-  body('text')
-    .not().isEmpty().withMessage(vk('pass_req')),
-  body('user_id')
-    .not().isEmpty().withMessage(vk('pass_req'))
-    .isInt([ {min: 1} ]).withMessage(vk('num')),
-  body('comment_id')
-    .not().isEmpty().withMessage(vk('pass_req'))
+const checkHashtag = [
+  query('hashtag')
+    .not().isEmpty().withMessage(vk('hashtag_req'))
     .isInt([ {min: 1} ]).withMessage(vk('num'))
 ];
 
 module.exports = {
   setComment,
-  setCommentReply
+  checkHashtag
 };

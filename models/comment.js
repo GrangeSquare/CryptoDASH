@@ -1,30 +1,30 @@
 'use strict';
 
-module.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize, dataTypes) => {
   var Comment = sequelize.define('Comment', {
     id: {
-      type: DataTypes.BIGINT.UNSIGNED,
+      type: dataTypes.BIGINT.UNSIGNED,
       autoIncrement: true,
       primaryKey: true
     },
+    reply_id: {
+      type: dataTypes.BIGINT.UNSIGNED,
+      allowNull: true
+    },
     title: {
-      type: DataTypes.STRING(128),
+      type: dataTypes.STRING(64),
       allowNull: true
     },
     text: {
-      type: DataTypes.STRING(256),
-      allowNull: false
-    },
-    likes: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      defaultValue: 0
-    },
-    user_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
+      type: dataTypes.STRING(64),
       allowNull: false
     },
     hashtag_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
+      type: dataTypes.BIGINT.UNSIGNED,
+      allowNull: false
+    },
+    user_id: {
+      type: dataTypes.BIGINT.UNSIGNED,
       allowNull: false
     }
   }, {
@@ -48,9 +48,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false
       }
     });
-    models.Comment.hasMany(models.CommentReply, { foreignKey: { allowNull: false } });
     models.Comment.hasMany(models.Like, { foreignKey: { allowNull: false } });
   };
-
   return Comment;
 };

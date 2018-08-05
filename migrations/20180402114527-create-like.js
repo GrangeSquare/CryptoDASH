@@ -1,4 +1,5 @@
 'use strict';
+
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable('like', {
@@ -19,13 +20,9 @@ module.exports = {
         type: Sequelize.BIGINT.UNSIGNED,
         allowNull: false,
         references: {
-          model: 'comment' || 'comment_reply',
+          model: 'comment',
           key: 'id'
         }
-      },
-      type: {
-        type: Sequelize.STRING(256),
-        allowNull: false
       },
       created_at: {
         allowNull: false,

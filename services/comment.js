@@ -1,56 +1,23 @@
 'use strict';
 
 const db = require('../models');
-const hashtag = require('./hashtag');
 
 async function setComment (data) {
-  const hashId = await hashtag.getIdByName(data.hashtag);
-
-  if (!hashId) {
-    throw new Error();
-  }
-  console.log(data.title)
-  const createObj = {
-    title: data.title,
-    text: data.text,
-    user_id: data.user_id,
-    hashtag_id: hashId.get('id')
-  };
-
-  const comment = await db.Comment.create(createObj);
+  const comment = db.Comment.create(data);
 
   if (!comment) {
     throw new Error();
   }
 }
 
-async function setCommentReply (data) {
-  const createObj = {
-    title: data.title,
-    text: data.text,
-    user_id: data.user_id,
-    comment_id: data.comment_id
-  };
-
-  const commentReply = await db.CommentReply.create(createObj);
-
-  if (!commentReply) {
-    throw new Error();
-  }
-}
-
-async function getCommentsByHashtag (name) {
-  const hashId = await hashtag.getIdByName(name);
-
+async function getCommentsByHashtag (hashtag) {
   const comments = await db.Comment.findAll({
     where: {
-      hashtag_id: hashId.get('id')
+      hashtag_id: hashtag
     },
     include: [{
-      model: db.CommentReply,
-      attributes: ['user_id', 'text', 'title', 'likes', 'created_at']
-    }],
-    attributes: ['user_id', 'text', 'title', 'likes', 'created_at']
+      model: db.Like
+    }]
   });
 
   return comments;
@@ -58,6 +25,5 @@ async function getCommentsByHashtag (name) {
 
 module.exports = {
   setComment,
-  setCommentReply,
   getCommentsByHashtag
 };

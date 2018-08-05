@@ -1,4 +1,5 @@
 'use strict';
+
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable('comment', {
@@ -7,31 +8,31 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true
       },
-      title: {
-        type: Sequelize.STRING(128),
+      reply_id: {
+        type: Sequelize.BIGINT.UNSIGNED,
         allowNull: true
       },
-      text: {
-        type: Sequelize.STRING(256),
+      title: {
+        type: Sequelize.STRING(128),
         allowNull: false
       },
-      likes: {
-        type: Sequelize.BIGINT.UNSIGNED,
-        defaultValue: 0
-      },
-      user_id: {
-        type: Sequelize.BIGINT.UNSIGNED,
-        allowNull: false,
-        references: {
-          model: 'user',
-          key: 'id'
-        }
+      text: {
+        type: Sequelize.STRING(512),
+        allowNull: false
       },
       hashtag_id: {
         type: Sequelize.BIGINT.UNSIGNED,
         allowNull: false,
         references: {
           model: 'hashtag',
+          key: 'id'
+        }
+      },
+      user_id: {
+        type: Sequelize.BIGINT.UNSIGNED,
+        allowNull: false,
+        references: {
+          model: 'user',
           key: 'id'
         }
       },

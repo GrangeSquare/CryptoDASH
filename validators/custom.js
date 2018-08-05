@@ -3,7 +3,6 @@
 const userServices = require('../services/users');
 const totp = require('../services/totp');
 const authServices = require('../services/auth');
-const hashtagServices = require('../services/hashtag');
 
 module.exports = {
   isEqual,
@@ -15,8 +14,7 @@ module.exports = {
   checkPasswordChangeHash,
   totpCheckPassword,
   checkTotpChangeHash,
-  checkHashtag,
-  checkTypeOfComment
+  checkReplyId
 };
 
 const digitsRegexp = new RegExp('[0-9]');
@@ -109,16 +107,11 @@ async function checkTotpChangeHash (hash, {req}) {
   }
 }
 
-async function checkHashtag (name) {
-  const hashtag = await hashtagServices.getHashtagByName(name);
-
-  if (!hashtag) {
-    throw new Error();
-  }
-}
-
-async function checkTypeOfComment (type) {
-  if (type !== 'comment' || type !== 'reply') {
+async function checkReplyId (id) {
+  if (!(id === 'null' || digitsRegexp.test(id))) {
+    console.log(id);
+    console.log(id == 'null');
+    console.log(digitsRegexp.test(id));
     throw new Error();
   }
 }

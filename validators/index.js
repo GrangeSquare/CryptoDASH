@@ -6,6 +6,7 @@ const { ValidationError } = require('../utils/errors');
 const user = require('./user');
 const comment = require('./comment');
 const like = require('./like');
+const hashtag = require('./hashtag');
 
 // Append validationError middleware to each validator array
 function appendValidationError (validators) {
@@ -32,5 +33,6 @@ function validationError (req, res, next) {
 module.exports = {
   users: appendValidationError(user),
   comments: appendValidationError(comment),
-  likes: appendValidationError(like)
+  likes: appendValidationError(like),
+  hashtags: appendValidationError(hashtag)
 };

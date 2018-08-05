@@ -1,22 +1,18 @@
 'use strict';
 
-module.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize, dataTypes) => {
   var Like = sequelize.define('Like', {
     id: {
-      type: DataTypes.BIGINT.UNSIGNED,
+      type: dataTypes.BIGINT.UNSIGNED,
       autoIncrement: true,
       primaryKey: true
     },
-    user_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false
-    },
     comment_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
+      type: dataTypes.BIGINT.UNSIGNED,
       allowNull: false
     },
-    type: {
-      type: DataTypes.STRING(64),
+    user_id: {
+      type: dataTypes.BIGINT.UNSIGNED,
       allowNull: false
     }
   }, {
@@ -28,19 +24,18 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   Like.associate = function (models) {
+    models.Like.belongsTo(models.Comment, {
+      onDelete: 'CASCADE', // todo: FK is on delete 'set null', and column is null
+      foreignKey: {
+        allowNull: false
+      }
+    });
     models.Like.belongsTo(models.User, {
       onDelete: 'CASCADE', // todo: FK is on delete 'set null', and column is null
       foreignKey: {
         allowNull: false
       }
     });
-    models.Like.belongsTo(models.Comment || models.CommentReply, {
-      onDelete: 'CASCADE', // todo: FK is on delete 'set null', and column is null
-      foreignKey: {
-        allowNull: false
-      }
-    });
   };
-
   return Like;
 };
