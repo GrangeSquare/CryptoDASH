@@ -1,16 +1,17 @@
 'use strict';
 
-const db = require('../models');
-const passwords = require('../utils/passwords');
-const auth = require('./auth');
-const utils = require('../utils/utils');
-const exchanges = require('../exchanges');
-const currencyList = require('../utils/currency_list');
-const hmac = require('../utils/hmac');
-const emailSender = require('./email');
-const config = require('../config');
+const db = require('../../models');
+const passwords = require('../../utils/passwords');
+const auth = require('../auth');
+const utils = require('../../utils/utils');
+const exchanges = require('../../exchanges');
+const currencyList = require('../../utils/currency_list');
+const hmac = require('../../utils/hmac');
+const emailSender = require('../email');
+const config = require('../../config');
 const url = require('url');
 const querystring = require('querystring');
+const ipfs = require('../ipfs');
 
 module.exports = {
   register,
@@ -178,7 +179,6 @@ async function setUserAccountBalance (userId, walletId = undefined) {
 
     const walletId = element.get('id');
 
-    await removeWalletBalance(walletId);
     const bulkInsert = [];
 
     for (let i in balance) {
@@ -191,7 +191,24 @@ async function setUserAccountBalance (userId, walletId = undefined) {
       bulkInsert.push(currencyAmount);
     }
 
-    await db.CurrencyAmount.bulkCreate(bulkInsert); // todo: perfomance issue
+    const dataForIPFS = {
+      data: bulkInsert,
+      existingHash: element.get('ipfs_hash')
+    };
+    // console.log(dataForIPFS)
+    const hash = await ipfs.addToIPFS(dataForIPFS);
+
+    const result = await db.ExchangeWallet.update({
+      ipfs_hash: hash
+    }, {
+      where: {
+        id: element.get('id')
+      }
+    });
+
+    if (!result[0]) {
+      throw new Error();
+    }
   });
 }
 
@@ -209,35 +226,26 @@ async function getUserAccountBalance (userId) {
         model: db.Exchange,
         required: true,
         attributes: ['name']
-      }, {
-        model: db.CurrencyAmount,
-        required: true,
-        include: [{
-          model: db.Currency,
-          required: true,
-          attributes: ['symbol']
-        }],
-        attributes: ['amount']
       }],
-      attributes: {
-        exclude: ['created_at', 'updated_at', 'exchange_id', 'user_id']
-      }
+      attributes: ['id', 'created_at', 'updated_at', 'ipfs_hash']
     }],
     attributes: {
       exclude: ['email_confirmed', 'created_at', 'updated_at']
     }
   });
+
+  const wallets = user.get('ExchangeWallets');
+
+  for (let i in wallets) {
+    const hash = wallets[i].get('ipfs_hash');
+
+    const ipfsData = await ipfs.getFromIPFS(hash);
+    wallets[i].dataValues.user_balance_data = ipfsData;
+
+    delete wallets[i].dataValues.ipfs_hash;
+  }
+
   return user;
-}
-
-async function removeWalletBalance (walletId) {
-  const ok = await db.CurrencyAmount.destroy({
-    where: {
-      exchange_wallet_id: walletId
-    }
-  });
-
-  return ok;
 }
 
 async function verifyEmail (data) {

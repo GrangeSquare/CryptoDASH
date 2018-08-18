@@ -81,8 +81,7 @@ async function getUserAccountBalance (req, res, next) {
     res.send(amountObj);
     res.status(200).end();
   } catch (err) {
-    console.log(err);
-    next(new AuthenticationError(err));
+    next(err);
   }
 }
 

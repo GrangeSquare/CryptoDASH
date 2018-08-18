@@ -6,6 +6,10 @@ module.exports = (sequelize, dataTypes) => {
       type: dataTypes.BIGINT.UNSIGNED,
       autoIncrement: true,
       primaryKey: true
+    },
+    ipfs_hash: {
+      type: dataTypes.STRING,
+      unique: true
     }
   }, {
     underscored: true,

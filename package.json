@@ -24,6 +24,7 @@
         "node-binance-api": "^0.7.4",
         "querystring": "^0.2.0",
         "sequelize": "^4.38.0",
-        "speakeasy": "^2.0.0"
+        "speakeasy": "^2.0.0",
+        "winston": "^3.0.0"
     }
 }
