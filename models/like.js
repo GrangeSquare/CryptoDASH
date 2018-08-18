@@ -1,38 +1,41 @@
 'use strict';
 
 module.exports = (sequelize, dataTypes) => {
-  var Hashtag = sequelize.define('Hashtag', {
+  var Like = sequelize.define('Like', {
     id: {
       type: dataTypes.BIGINT.UNSIGNED,
       autoIncrement: true,
       primaryKey: true
     },
-    name: {
-      type: dataTypes.STRING(64),
-      allowNull: true
+    comment_id: {
+      type: dataTypes.BIGINT.UNSIGNED,
+      allowNull: false
     },
-    currency_id: {
+    user_id: {
       type: dataTypes.BIGINT.UNSIGNED,
       allowNull: false
     }
   }, {
     underscored: true,
     freezeTableName: true,
-    tableName: 'hashtag',
+    tableName: 'like',
     charset: 'utf8',
     collate: 'utf8_unicode_ci'
   });
 
-  Hashtag.associate = function (models) {
-    models.Hashtag.belongsTo(models.Currency, {
+  Like.associate = function (models) {
+    models.Like.belongsTo(models.Comment, {
       onDelete: 'CASCADE', // todo: FK is on delete 'set null', and column is null
       foreignKey: {
         allowNull: false
       }
     });
-    models.Hashtag.hasMany(models.HashtagCounter, { foreignKey: { allowNull: false } });
-    models.Hashtag.hasMany(models.Comment, { foreignKey: { allowNull: false } });
+    models.Like.belongsTo(models.User, {
+      onDelete: 'CASCADE', // todo: FK is on delete 'set null', and column is null
+      foreignKey: {
+        allowNull: false
+      }
+    });
   };
-
-  return Hashtag;
+  return Like;
 };

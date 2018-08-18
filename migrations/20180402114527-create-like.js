@@ -2,21 +2,25 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('hashtag_counter', {
+    return queryInterface.createTable('like', {
       id: {
         type: Sequelize.BIGINT.UNSIGNED,
         autoIncrement: true,
         primaryKey: true
       },
-      count: {
-        type: Sequelize.BIGINT.UNSIGNED,
-        allowNull: false
-      },
-      hashtag_id: {
+      user_id: {
         type: Sequelize.BIGINT.UNSIGNED,
         allowNull: false,
         references: {
-          model: 'hashtag',
+          model: 'user',
+          key: 'id'
+        }
+      },
+      comment_id: {
+        type: Sequelize.BIGINT.UNSIGNED,
+        allowNull: false,
+        references: {
+          model: 'comment',
           key: 'id'
         }
       },
@@ -31,6 +35,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('hashtag_counter');
+    return queryInterface.dropTable('like');
   }
 };

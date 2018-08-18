@@ -40,6 +40,8 @@ module.exports = (sequelize, DataTypes) => {
     models.User.hasOne(models.UserAuth, { foreignKey: { allowNull: false } });
     models.User.hasOne(models.UserTotp, { foreignKey: { allowNull: false } });
     models.User.hasMany(models.ExchangeWallet, { foreignKey: { allowNull: false } });
+    models.User.hasMany(models.Comment, { foreignKey: { allowNull: false } });
+    models.User.hasMany(models.Like, { foreignKey: { allowNull: false } });
   };
 
   return User;

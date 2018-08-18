@@ -13,7 +13,8 @@ module.exports = {
   validateTotp,
   checkPasswordChangeHash,
   totpCheckPassword,
-  checkTotpChangeHash
+  checkTotpChangeHash,
+  checkReplyId
 };
 
 const digitsRegexp = new RegExp('[0-9]');
@@ -102,6 +103,15 @@ async function checkTotpChangeHash (hash, {req}) {
   const userIdHash = userServices.getTotpResetEmailHash(req.body.user_id);
 
   if (userIdHash !== hash) {
+    throw new Error();
+  }
+}
+
+async function checkReplyId (id) {
+  if (!(id === 'null' || digitsRegexp.test(id))) {
+    console.log(id);
+    console.log(id == 'null');
+    console.log(digitsRegexp.test(id));
     throw new Error();
   }
 }

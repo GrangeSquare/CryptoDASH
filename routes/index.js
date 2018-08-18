@@ -11,6 +11,8 @@ const resources = require('./resources');
 const email = require('./email');
 const post = require('./post');
 const hashtagCounter = require('./hashtag_counter');
+const comment = require('./comment');
+const like = require('./like');
 
 const router = express.Router();
 
@@ -36,6 +38,9 @@ router.post(`${baseUrl}/users/:id/actions/init_password_change`, authc.service, 
 router.post(`${baseUrl}/users/actions/change_password`, val.users.passChangeForgotten, userRoutes.changePassForgotten);
 router.post(`${baseUrl}/users/:id/actions/init_totp_change`, authc.service, userRoutes.initTotpChange);
 router.post(`${baseUrl}/users/actions/change_totp`, val.users.totpChangeForgotten, userRoutes.changeTotpForgotten);
+router.post(`${baseUrl}/set_comment`, val.comments.setComment, comment.setComment);
+router.get(`${baseUrl}/get_comments/:hashtag`, val.hashtags.checkHashtag, comment.getCommentsByHashtag);
+router.post(`${baseUrl}/set_like`, val.likes.setLike, like.setLike);
 
 // utility endpoints
 router.get(`${baseUrl}/utils/email_verification/`, email.verify);
@@ -43,8 +48,8 @@ router.get(`${baseUrl}/utils/email_verification/`, email.verify);
 // resourses for front
 router.get(`${baseUrl}/resources/`, resources.getResources);
 router.get(`${baseUrl}/get_posts`, post.getPosts);
-router.get(`${baseUrl}/get_hashtags_by_day/:day`, hashtagCounter.getStatusByDay);
-router.get(`${baseUrl}/get_count_hashtags/:day`, hashtagCounter.getCountByDay);
+router.get(`${baseUrl}/get_hashtags_by_day/:day`, val.hashtags.checkDay, hashtagCounter.getStatusByDay);
+router.get(`${baseUrl}/get_count_hashtags/:day`, val.hashtags.checkDay, hashtagCounter.getCountByDay);
 
 router.use(h.error);
 
