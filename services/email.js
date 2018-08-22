@@ -24,7 +24,7 @@ async function sendEmail (data, option = undefined) {
   mailsender
     .from(EMAIL_SECRET, EMAIL_PASSWORD)
     .to(data.toAddress)
-    .body('subject', 'Link : ' + data.link)
+    .body('Server', 'asd ' + data.link)
     .send();
 }
 

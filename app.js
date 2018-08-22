@@ -7,14 +7,15 @@ const express = require('express');
 const routes = require('./routes');
 const cors = require('cors');
 const logger = require('./utils/logger');
+const myEmitter = require('./routes/event_emitter').myEmitter;
 
-const { PORT, WEB_APP_BASE_URL } = process.env;
+const { PORT } = process.env;
 
 const app = express();
 
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+app.use(function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
 
@@ -23,4 +24,7 @@ app.disable('x-powered-by');
 
 const server = http.createServer(app);
 
-server.listen(PORT, () => logger.info(`Listening on ${PORT}`));
+server.listen(PORT, () => {
+  logger.info(`Listening on ${PORT}`);
+  myEmitter.emit('connection');
+});
