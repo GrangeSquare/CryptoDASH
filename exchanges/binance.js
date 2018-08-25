@@ -9,13 +9,17 @@ const getUserBalance = async (context) => {
   }
 
   const client = Binance({ // todo: check contructor
-    apiKey: context.apiKey, // 'VITNQxnBW5hY1s6iC4XFT693BeN4SXpbCUMMYmgI7nXusywW02qUlDb6fMkdc0g8',
-    apiSecret: context.apiSecret // 'fshnXgWD8v52vL5EP3W8cvPSiLm0rzB5ZwjiqMhv6w652DvQPoPejZK3bKHAbQCI'
+    apiKey: context.apiKey, // 'Wk3N8MFVLdiFNaLzFWWcSdIroYSjvuZURpV7h2VTftNVcDb1obkwsPPr9rEH81oo',
+    apiSecret: context.apiSecret // 'tjsm7JpRpzFp0J1OT3au5UxB7JnRQ5n3IjFrKrfFvpvsJqAwK5qh7SrgU3oWvn68'
   });
 
-  const nonEmptyBalances = {};
+  if (!client) {
+    throw new Error();
+  }
 
   const accountBalance = await client.accountInfo();
+  let nonEmptyBalances = {};
+
   if (!accountBalance) {
     throw new Error();
   }

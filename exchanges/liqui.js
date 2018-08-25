@@ -16,10 +16,24 @@ const getUserBalance = async (context) => {
   // R88F8Y22-PIZ3MHDM-76OA34NL-CDLUV2J7-UT7IFJ41
   // 5d9952d7170b47379e238089415675dd4dc906f3bcae075cf0e11b0999e2dc2e
 
-  const nonEmptyBalances = {};
+  if (!liqui) {
+    throw new Error();
+  }
 
   const accountInfo = await liqui.getInfo();
-  console.log(accountInfo);
+  let nonEmptyBalances = {};
+
+  if (!accountInfo) {
+    throw new Error();
+  }
+
+  Object.keys(accountInfo.funds).forEach(element => {
+    const BigNum = new BigNumber(accountInfo.funds[element]);
+
+    if (BigNum.gt(new BigNumber(0))) {
+      nonEmptyBalances[element] = BigNum;
+    }
+  });
 
   return nonEmptyBalances;
 };

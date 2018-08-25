@@ -8,21 +8,28 @@ const getUserBalance = async (context) => {
     throw new Error();
   }
 
-  const client = new Kucoin(context.apiKey, context.apiSecret);
+  const accountBalance = new Kucoin(context.apiKey, context.apiSecret);
   // 5b374093cbdbf73e65d3f65d
   // 58968302-6658-44a4-879a-e360b47f2187
 
-  const nonEmptyBalances = {};
+  if (!accountBalance) {
+    throw new Error();
+  }
 
-  await client.getBalance().then((res) => {
-    res.data.forEach(element => {
-      const BigNum = new BigNumber(element.balance);
+  const balance = await accountBalance.getBalance();
+  let nonEmptyBalances = {};
 
-      if (BigNum.gt(new BigNumber(0))) {
-        nonEmptyBalances[element.coinType] = BigNum;
-      }
-    });
-  }).catch(console.error);
+  if (!balance) {
+    throw new Error();
+  }
+
+  balance.data.forEach(element => {
+    const BigNum = new BigNumber(element.balance);
+
+    if (BigNum.gt(new BigNumber(0))) {
+      nonEmptyBalances[element.coinType] = BigNum;
+    }
+  });
 
   return nonEmptyBalances;
 };

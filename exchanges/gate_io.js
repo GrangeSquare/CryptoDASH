@@ -9,20 +9,30 @@ const getUserBalance = async (context) => {
   }
 
   const gateIoClient = new GateIo(context.apiKey, context.apiSecret);
-
   // B6E11016-87D2-49B3-8C7C-6910419D74FD
   // 2302dc03d85de936c10ee284ee05843844d317421b161910e312a700572e04c2
 
   const nonEmptyBalances = {};
+  let promise = new Promise(function (resolve, reject) {
+    gateIoClient.getBalances(function (err, res) {
+      if (err) {
+        reject(err);
+      } else {
+        const JSONString = JSON.parse(res.body);
+        let arrayJSON = JSONString.available;
 
-  gateIoClient.getBalances(function (err, res) {
-    if (err) {
-      // console.log(err);
-      // console.log('rrrrrrrrrr');
-    } else {
-      console.log(res.body);
-    }
-  });
+        arrayJSON.forEach(element => {
+          const BigNum = new BigNumber(element.available);
+
+          if (BigNum.gt(new BigNumber(0))) {
+            nonEmptyBalances[element.currency] = BigNum;
+          }
+        });
+        resolve();
+      }
+    });
+  }); // TODO : CHECK !
+  await promise;
 
   return nonEmptyBalances;
 };

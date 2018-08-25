@@ -11,17 +11,24 @@ const getUserBalance = async (context) => {
     secretKey: context.apiSecret // 384ecd4e2af948b6a6f66c788c9890f8
   });
 
+  if (!client) {
+    throw new Error();
+  }
+
+  const accountBalance = await client.getBalances();
   const nonEmptyBalances = {};
 
-  await client.getBalances().then((response) => {
-    response.result.forEach(element => {
-      const BigNum = new BigNumber(element.Balance.Balance);
+  if (!accountBalance) {
+    throw new Error();
+  }
 
-      if (BigNum.gt(new BigNumber(0))) {
-        nonEmptyBalances[element.Currency.Currency] = BigNum;
-      }
-    });
-  }).catch(console.error);
+  accountBalance.result.forEach(element => {
+    const BigNum = new BigNumber(element.Balance.Balance);
+
+    if (BigNum.gt(new BigNumber(0))) {
+      nonEmptyBalances[element.Currency.Currency] = BigNum;
+    }
+  });
 
   return nonEmptyBalances;
 };

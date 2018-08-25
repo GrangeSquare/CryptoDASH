@@ -1,6 +1,6 @@
 'use strict';
 
-const hitbtc = require('node-hitbtc');
+const Cryptopia = require('cryptopia-api')();
 const BigNumber = require('bignumber.js');
 
 const getUserBalance = async (context) => {
@@ -8,26 +8,24 @@ const getUserBalance = async (context) => {
     throw new Error();
   }
 
-  var api2 = hitbtc.privateApi('a35c3db8b8aa80844a639342560340f6', '3a9494f62f744297398ba8d189c2c716');
-  // a35c3db8b8aa80844a639342560340f6
-  // 3a9494f62f744297398ba8d189c2c716
+  Cryptopia.setOptions({
+    API_KEY: context.apiKey, // 'd5ebfdcf3e534511b996ed81a573b9bd'
+    API_SECRET: context.apiSecret // 'N/dpq1pQ6M4ymT4QKFkHBXEXZaBI2ydx/GtBss/Ut7g='
+  });
 
-  if (!api2) {
-    throw new Error();
-  }
-
-  const accountBalance = await api2.getAsset();
   const nonEmptyBalances = {};
+
+  const accountBalance = await Cryptopia.getBalance();
 
   if (!accountBalance) {
     throw new Error();
   }
 
-  accountBalance.forEach(element => {
-    const BigNum = new BigNumber(element.available);
+  accountBalance.Data.forEach((balance) => {
+    const BigNum = new BigNumber(balance.Total);
 
     if (BigNum.gt(new BigNumber(0))) {
-      nonEmptyBalances[element.currency] = BigNum;
+      nonEmptyBalances[balance.Symbol] = BigNum;
     }
   });
 
@@ -36,7 +34,7 @@ const getUserBalance = async (context) => {
 
 const getUserBalanceDummy = async (context) => {
   return {
-    'BTC': new BigNumber('2.234')
+    'BTC': new BigNumber('3.234')
   };
 };
 

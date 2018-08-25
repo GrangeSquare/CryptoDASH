@@ -9,15 +9,32 @@ const getUserBalance = async (context) => {
   }
 
   const privateClient = new OKEX(context.apiKey, context.apiSecret);
-
   // d4f89965-1292-417a-8be8-f38c4b2a60b6
   // 358D143C7C6CA489FE376B34D030D2EE
 
-  const nonEmptyBalances = {};
+  if (!privateClient) {
+    throw new Error();
+  }
 
-  privateClient.getUserInfo((data, data2) => {
-    console.log(data2.info.funds.free); // todo: freezed
+  let nonEmptyBalances = {};
+
+  let promise = new Promise(function (resolve, reject) {
+    privateClient.getUserInfo((err, data2) => {
+      if (err) {
+        return reject(err);
+      } else {
+        Object.keys(data2.info.funds.free).forEach(element => {
+          const BigNum = new BigNumber(data2.info.funds.free[element]);
+
+          if (BigNum.gt(new BigNumber(0))) {
+            nonEmptyBalances[element] = BigNum;
+          }
+        });
+        resolve();
+      }
+    });
   });
+  await promise;
 
   return nonEmptyBalances;
 };
