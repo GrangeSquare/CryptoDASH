@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
   Currency.associate = function (models) {
     models.Currency.hasMany(models.CurrencyAmount);
     models.Currency.hasMany(models.Hashtag);
+    models.Currency.hasMany(models.CoinTicker);
   };
 
   return Currency;
