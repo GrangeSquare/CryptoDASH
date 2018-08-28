@@ -32,14 +32,16 @@ router.post(`${baseUrl}/users/logout`, userRoutes.logout);
 router.post(`${baseUrl}/users/:id/exchange/:exchangeId`, val.users.registerUserCredentials, authc.service, authc.user, userRoutes.registerUserCredentials);
 
 // action endpoints
-router.post(`${baseUrl}/users/:id/set_balance`, authc.service, authc.user, val.users.setBalance, userRoutes.setUserAccountBalance);
 router.get(`${baseUrl}/users/:id/get_balance`, authc.service, authc.user, val.users.getBalance, userRoutes.getUserAccountBalance);
+router.get(`${baseUrl}/get_comments/:hashtag`, val.hashtags.checkHashtag, comment.getCommentsByHashtag);
+router.post(`${baseUrl}/users/:id/set_balance`, authc.service, authc.user, val.users.setBalance, userRoutes.setUserAccountBalance);
 router.post(`${baseUrl}/users/:id/actions/init_password_change`, authc.service, userRoutes.initPasswordChange);
 router.post(`${baseUrl}/users/actions/change_password`, val.users.passChangeForgotten, userRoutes.changePassForgotten);
 router.post(`${baseUrl}/users/:id/actions/init_totp_change`, authc.service, userRoutes.initTotpChange);
 router.post(`${baseUrl}/users/actions/change_totp`, val.users.totpChangeForgotten, userRoutes.changeTotpForgotten);
 router.post(`${baseUrl}/set_comment`, val.comments.setComment, comment.setComment);
-router.get(`${baseUrl}/get_comments/:hashtag`, val.hashtags.checkHashtag, comment.getCommentsByHashtag);
+router.get(`${baseUrl}/resources/ticker_list`, h.table, resources.getTickers);
+
 router.post(`${baseUrl}/set_like`, val.likes.setLike, like.setLike);
 
 // utility endpoints
