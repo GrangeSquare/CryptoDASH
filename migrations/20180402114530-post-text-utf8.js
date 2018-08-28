@@ -2,7 +2,7 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     queryInterface.changeColumn('post', 'text', {
-      type: Sequelize.STRING(512) + ' CHARSET utf8 COLLATE utf8_unicode_ci',
+      type: Sequelize.STRING(512) + ' CHARACTER SET utf8mb4 COLLATE utf8mb4_bin',
       allowNull: true
     });
 
