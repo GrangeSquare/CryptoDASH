@@ -18,8 +18,6 @@ module.exports = {
       }
     }
 
-    console.log(bulkInsertArr);
-
     return queryInterface.bulkInsert('currency', bulkInsertArr, {
       updateOnDuplicate: ['name']
     });
