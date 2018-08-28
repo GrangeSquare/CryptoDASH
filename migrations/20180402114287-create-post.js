@@ -12,7 +12,7 @@ module.exports = {
         allowNull: false
       },
       text: {
-        type: Sequelize.STRING(512),
+        type: Sequelize.STRING(512) + ' CHARSET utf8 COLLATE utf8_unicode_ci',
         allowNull: true
       },
       type: {
