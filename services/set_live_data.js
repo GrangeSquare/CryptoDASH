@@ -9,7 +9,6 @@ const currency = require('../utils/currency_list');
 const BigNumber = require('bignumber.js');
 const { formatDate } = require('../utils/date_format');
 const db = require('../models');
-var sizeof = require('sizeof');
 
 const coinObj = {};
 const dateToCheckNewDay = new Date();

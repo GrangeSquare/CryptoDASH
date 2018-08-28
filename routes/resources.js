@@ -47,7 +47,17 @@ async function getTickers (req, res, next) {
   }
 }
 
+async function getCurrencyList (req, res, next) {
+  try {
+    const data = await utilService.getCurrencyList(res.locals.pagination);
+    res.send(Response.success(data)).end();
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getResources,
-  getTickers
+  getTickers,
+  getCurrencyList
 };

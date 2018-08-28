@@ -41,6 +41,7 @@ router.post(`${baseUrl}/users/:id/actions/init_totp_change`, authc.service, user
 router.post(`${baseUrl}/users/actions/change_totp`, val.users.totpChangeForgotten, userRoutes.changeTotpForgotten);
 router.post(`${baseUrl}/set_comment`, val.comments.setComment, comment.setComment);
 router.get(`${baseUrl}/resources/ticker_list`, h.table, resources.getTickers);
+router.get(`${baseUrl}/resources/currency_list`, h.table, resources.getCurrencyList);
 
 router.post(`${baseUrl}/set_like`, val.likes.setLike, like.setLike);
 
