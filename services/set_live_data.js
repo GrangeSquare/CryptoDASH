@@ -31,7 +31,6 @@ async function getAPICount () {
 async function main (start = 1, coinAPICount, coins, baseValues) {
   try {
     console.log(start, coinAPICount, baseValues);
-    console.log('Lap started');
 
     if (start > coinAPICount) {
       reCall();
@@ -56,10 +55,14 @@ async function main (start = 1, coinAPICount, coins, baseValues) {
       coinObj[coinId] = calculatedCoin;
     }
 
-    await saveToDatabase(coinObj);
-    start += amountPerCall;
+    const coinToArray = Object.values(coinObj);
 
-    console.log('Lap is finished');
+    await Promise.all([
+      saveToDatabase(coinToArray),
+      saveToNewestTicker(coinToArray)
+    ]);
+
+    start += amountPerCall;
 
     callAfterCooldown(main, cooldown, start, coinAPICount, coins, baseValues);
   } catch (err) {
@@ -69,7 +72,6 @@ async function main (start = 1, coinAPICount, coins, baseValues) {
 }
 
 function callAfterCooldown (func, cooldownMS) {
-  console.log('COOLDOWN START');
   const args = Object.values(arguments);
 
   setTimeout(function () {
@@ -79,23 +81,14 @@ function callAfterCooldown (func, cooldownMS) {
   }, cooldownMS);
 }
 
-async function getCurrenciesWithMaxData () {
-  const resp = await db.Currency.find({
-    where: {
-      id: 1
-    },
-    include: [{
-      model: db.CoinTicker,
-      order: [['created_at', 'DESC']],
-      limit: 1
-    }]
-  });
-
-  console.log(resp.get('CoinTickers'));
+async function saveToDatabase (coinArr) {
+  await db.CoinTicker.bulkCreate(coinArr);
 }
 
-async function saveToDatabase (coinMap) {
-  await db.CoinTicker.bulkCreate(Object.values(coinMap));
+async function saveToNewestTicker (coinArr) {
+  await db.NewestTicker.bulkCreate(coinArr, {
+    updateOnDuplicate: true
+  });
 }
 
 function calculateBaseCoins (coins) {
@@ -129,7 +122,8 @@ function calculateCoin (coinData, baseCoinData, coinId) {
     market_cap: neededCoinData.market_cap,
     price_btc: priceInBtc.toString(),
     price_eth: priceInEth.toString(),
-    price_usd: coinPriceUSD.toString()
+    price_usd: coinPriceUSD.toString(),
+    change_24h: coinData.quotes.USD.percent_change_24h
   };
 }
 
@@ -149,5 +143,4 @@ async function reCall () {
   }
 }
 
-/// reCall(main, 2000, 4);
-getCurrenciesWithMaxData();
+reCall();

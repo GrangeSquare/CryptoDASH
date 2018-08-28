@@ -2,6 +2,7 @@
 
 const Response = require('../utils/response');
 const path = require('path');
+const utilService = require('../services/resources');
 
 const DEFAULT_LANGUAGE = process.env.DEFAULT_LANGUAGE;
 const cache = {};
@@ -37,6 +38,16 @@ function requireResource (mod, lang) {
   return require(path.join('../resources/', lang || '.', mod));
 }
 
+async function getTickers (req, res, next) {
+  try {
+    const data = await utilService.getTickers(res.locals.pagination);
+    res.send(Response.success(data)).end();
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
-  getResources
+  getResources,
+  getTickers
 };

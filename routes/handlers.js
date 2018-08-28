@@ -2,7 +2,8 @@ const Response = require('../utils/response');
 const errors = require('../utils/errors');
 
 module.exports = {
-  error
+  error,
+  table
 };
 
 function error (err, req, res, next) {
@@ -21,4 +22,32 @@ function error (err, req, res, next) {
     const error = (process.env.ENV === 'development') ? err : null;
     res.status(status).json(Response.error(status, 'Error', error));
   }
+}
+
+function table (req, res, next) {
+  const PAGE_LIMIT = 20;
+  const sortColumn = req.query.sort_column;
+  const sortOrder = req.query.sort_order;
+
+  res.locals.sort = {
+    column: sortColumn,
+    order: sortOrder
+  };
+
+  let limit = +req.query.limit || PAGE_LIMIT;
+  if (limit > PAGE_LIMIT || limit < 0) {
+    limit = PAGE_LIMIT;
+  }
+
+  let offset = +req.query.offset || 0;
+  if (offset < 0) {
+    offset = 0;
+  }
+
+  res.locals.pagination = {
+    offset: offset,
+    limit: limit
+  };
+
+  next();
 }
