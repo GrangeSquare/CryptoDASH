@@ -5,13 +5,15 @@ const passwords = require('../utils/passwords');
 const totp = require('./totp');
 const { AuthorizationError } = require('../utils/errors');
 const ctx = require('../utils/ctx');
+const speakeasy = require('speakeasy');
 
 module.exports = {
   checkPassword,
   getUserAuth,
   checkTotpToken,
   changePassForgotten,
-  changeTotpForgotten
+  changeTotpForgotten,
+  validateToken
 };
 async function checkPassword (userId, password) {
   const UserAuth = await getUserAuth(userId);
@@ -224,4 +226,14 @@ function resetTotpAttempts (context, UserTotp) {
   };
 
   UserTotp.save(options);
+}
+
+async function validateToken (secret, token) {
+  const verified = await speakeasy.totp.verify({
+    secret: secret,
+    encoding: 'base32',
+    token: token,
+    window: config.constants.totpWindow
+  });
+  return verified;
 }

@@ -27,7 +27,8 @@ module.exports = {
   getPasswordResetEmailHash,
   initTotpChange,
   sendTotpResetEmail,
-  getTotpResetEmailHash
+  getTotpResetEmailHash,
+  findSecretById
 };
 
 const sessionProperties = ['id', 'email'];
@@ -375,4 +376,14 @@ async function getUserWithTotp (id, attributes = undefined) {
     }]
   });
   return user;
+}
+
+async function findSecretById (id) {
+  const tfa = await db.UserTotp.findOne({
+    where: {
+      user_id: id
+    },
+    attributes: ['secret']
+  });
+  return tfa.dataValues.secret;
 }
