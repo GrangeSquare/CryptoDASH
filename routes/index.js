@@ -25,6 +25,7 @@ router.use(session);
 
 const baseUrl = '/api/v1';
 
+router.get(`${baseUrl}/users/me`, h.sendCsurfHeader, authc.service, userRoutes.me);
 router.post(`${baseUrl}/users/register`, val.users.register, userRoutes.register);
 router.post(`${baseUrl}/users/login`, val.users.login, userRoutes.login);
 router.post(`${baseUrl}/users/login1`, authc.service, val.users.login1, userRoutes.login1);
@@ -56,7 +57,7 @@ router.get(`${baseUrl}/get_hashtags_by_day/:day`, val.hashtags.checkDay, hashtag
 router.get(`${baseUrl}/get_count_hashtags/:day`, val.hashtags.checkDay, hashtagCounter.getCountByDay);
 
 // auth servise for checking if totp is right
-router.post(`/totp`, auth.checkTotp);
+router.post(`${baseUrl}/totp`, auth.checkTotp);
 
 router.use(h.error);
 

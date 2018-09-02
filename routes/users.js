@@ -16,7 +16,8 @@ module.exports = {
   initPasswordChange,
   changePassForgotten,
   initTotpChange,
-  changeTotpForgotten
+  changeTotpForgotten,
+  me
 };
 
 async function register (req, res, next) {
@@ -138,4 +139,26 @@ async function changeTotpForgotten (req, res, next) {
   } catch (err) {
     next(err);
   }
+}
+
+async function me (req, res, next) {
+  const user = req.session.user;
+
+  if (!user) { // just in case
+    next(new AuthenticationError());
+    return;
+  }
+
+  const userObject = await usersService.getUser(user.id, ['email_confirmed']);
+
+  if (!userObject) {
+    next(new AuthenticationError());
+    return;
+  }
+
+  res.status(200).send(Response.success({
+    id: user.id,
+    email: user.email,
+    email_confirmed: userObject.email_confirmed
+  })).end();
 }

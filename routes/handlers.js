@@ -3,7 +3,8 @@ const errors = require('../utils/errors');
 
 module.exports = {
   error,
-  table
+  table,
+  sendCsurfHeader
 };
 
 function error (err, req, res, next) {
@@ -49,5 +50,10 @@ function table (req, res, next) {
     limit: limit
   };
 
+  next();
+}
+
+function sendCsurfHeader (req, res, next) {
+  res.setHeader('csrf-token', req.csrfToken());
   next();
 }
