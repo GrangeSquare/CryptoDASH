@@ -21,10 +21,11 @@ async function setCurrencyList () {
   currencyList.count = count;
 }
 
-async function getTickers (pagination) {
+async function getTickers (pagination, sort) {
   const data = await db.NewestTicker.findAndCountAll({
     limit: pagination.limit,
-    offset: pagination.offset
+    offset: pagination.offset,
+    order: [[sort.sort_column, sort.sort_order]]
   });
 
   return data;

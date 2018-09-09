@@ -40,7 +40,7 @@ function requireResource (mod, lang) {
 
 async function getTickers (req, res, next) {
   try {
-    const data = await utilService.getTickers(res.locals.pagination);
+    const data = await utilService.getTickers(res.locals.pagination, res.locals.sort);
     res.send(Response.success(data)).end();
   } catch (err) {
     next(err);
