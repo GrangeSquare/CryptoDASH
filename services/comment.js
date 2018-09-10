@@ -10,10 +10,10 @@ async function setComment (data) {
   }
 }
 
-async function getCommentsByHashtag (hashtag) {
+async function getCommentsByHashtag (hashtagId) {
   const comments = await db.Comment.findAll({
     where: {
-      hashtag_id: hashtag
+      hashtag_id: hashtagId
     },
     include: [{
       model: db.Like
