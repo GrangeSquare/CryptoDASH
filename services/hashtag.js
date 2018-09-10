@@ -3,7 +3,8 @@
 const db = require('../models');
 
 module.exports = {
-  getHashtagsLike
+  getHashtagsLike,
+  createHashtag
 };
 
 async function getHashtagsLike (hashtagId) {
@@ -24,4 +25,8 @@ async function getHashtagsLike (hashtagId) {
   });
 
   return hashtagsList;
+}
+
+async function createHashtag (data) {
+  db.Hashtag.create(data); // to do create validation
 }

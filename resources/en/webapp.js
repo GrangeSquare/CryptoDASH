@@ -685,6 +685,7 @@ module.exports = {
     limit_invalid: 'limit is invalid',
     currency_invalid: 'currency is invalid',
     currency_req: 'currency is required',
+    currency_id_req: 'currency id is required',
     date_invalid: 'date is invalid',
     old_pass_incorrect: 'old password is incorrect',
     api_key_invalid: 'api key is invalid',
@@ -693,6 +694,8 @@ module.exports = {
     title_req: 'title is required',
     text_req: 'text is required',
     hashtag_req: 'hashtag id is required',
+    hashtag_name_req: 'hashtag name is required',
+    hashtag_long: 'hashtag name is too long',
     user_req: 'user id is required',
     day_req: 'day is required'
   }
