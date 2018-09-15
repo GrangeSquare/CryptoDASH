@@ -27,6 +27,7 @@
         "node-hitbtc": "^1.0.0",
         "oaex-liqui": "^2.1.7",
         "okex-rest": "0.0.1",
+        "percentage-difference": "^2.0.0",
         "poloniex-api": "^1.2.4",
         "querystring": "^0.2.0",
         "sequelize": "^4.38.0",
