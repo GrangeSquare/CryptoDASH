@@ -1,5 +1,5 @@
 const axios = require('axios');
-const coins = require('./coins').coinsArr;
+const coins = require('../utils/coins').coinsArr;
 const db = require('../models');
 const BigNumber = require('bignumber.js');
 const currency = require('../utils/currency_list');
@@ -37,41 +37,6 @@ const mapper = {
   tradeVolume: insertDailyVolume
 
 };
-/* var j = 0;
-var matched = 0;
-const objects = {};
-
-for (let i in coins) {
-  const symbol = coins[i].symbol;
-  if (currency[symbol]) {
-    // console.log(symbol);
-    matched++;
-
-    if (objects[symbol]) objects[symbol]++;
-    else objects[symbol] = 1;
-  }
-  j++;
-}
-
-var br = 0;
-for (let i in objects) {
-  if (objects[i] > 1) {
-    console.log('duplikati', i, objects[i]);
-  }
-  br++;
-}
-console.log(br);
-console.log(matched);
-
-process.exit();
-console.log('cryptocurrency chart: ', j);
-j = 0;
-for (let i in currency) {
-  j++;
-}
-
-console.log('coinmarketcap: ', j);
-process.exit(); */
 
 const dailyPriceETH = {}; // daily prices for ETH in USD
 const dailyPriceBTC = {}; // daily prices for BTC in USD
@@ -88,83 +53,41 @@ let coinsInserted = 0;
 let sumOfCoinValuesInDays = 0;
 let requestsMade = 0;
 
-async function getCoinsHistoricData (coin, initPhase = false) {
-  if (currency[coin.symbol] && !alreadyCollected[coin.symbol]) {
-    alreadyCollected[coin.symbol] = true;
+function fillCoinGaps (coinData, symbol, startStr) {
+  const startDate = new Date(startStr);
+  const endDate = new Date(years[years.length - 1]);
+  console.log(years[years.length - 1]);
+  console.log(startStr);
+  const filledData = {};
+  let yesterdayValue = null;
 
-    let coinData = {};
+  while (startDate <= endDate) {
+    const dateStr = formatDate(startDate);
 
-    for (let j = 1; j < years.length; j++) {
-      for (let valueType in type) {
-        try {
-          const url = 'https://www.cryptocurrencychart.com/api/coin/history/' + coin.id + '/' + years[j - 1] + '/' + years[j] + '/' + type[valueType].urlName + '/USD';
-
-          const response = await axios.get(url, {
-            headers: {
-              Key: '777dd072501580a53436a8a550e21cc2',
-              Secret: 'f05ea4394eaef7d1a456f426e79c47e0'
-            }
-          });
-
-          requestsMade++;
-
-          const data = response.data.data;
-
-          for (let valuePerDay in data) {
-            const value = data[valuePerDay][type[valueType].urlName];
-            const date = data[valuePerDay].date;
-
-            if (!value || !date) continue;
-
-            if (valueType === 'price' && (coin.symbol === 'ETH' || coin.symbol === 'BTC')) {
-              save(value, date, coin.symbol);
-            }
-
-            if (!initPhase) {
-              if (!coinData[date]) {
-                coinData[date] = {};
-              }
-
-              await mapper[valueType](coinData, value, date, coin.symbol);
-            }
-          }
-        } catch (err) {
-          console.log(err);
-          process.exit();
-        }
-      }
-    }
-    coinsInserted++;
-    if (!initPhase) {
-      await db.CoinData.bulkCreate(Object.values(coinData));
+    if (!coinData[dateStr] && yesterdayValue) {
+      filledData[dateStr] = yesterdayValue;
+    } else if (!coinData[dateStr] && !yesterdayValue) {
+      filledData[dateStr] = {
+        price_usd: '0',
+        price_eth: '0',
+        price_btc: '0',
+        currency_id: currency[symbol],
+        date: dateStr,
+        market_cap: '0',
+        daily_volume: '0'
+      };
     }
 
-    console.log('\n');
-    console.log(`${coin.symbol} is inserted.`);
-    console.log(`There is ${coinsInserted} coins so far.`);
-    console.log(`Total requests made to API is ${requestsMade} so far.`);
-    console.log('\n');
-  } else {
-    console.log(`${coin.symbol} is duplicate or doesnt exist in coinmarketcap.`);
+    if (coinData[dateStr]) {
+      filledData[dateStr] = coinData[dateStr];
+      yesterdayValue = coinData[dateStr];
+    }
+
+    startDate.setDate(startDate.getDate() + 1);
   }
+  // console.log(filledData); process.exit();
+  return filledData;
 }
-
-async function startCrawl () {
-  coinsInserted = 0;
-  sumOfCoinValuesInDays = 0;
-
-  for (let index in coins) {
-    await getCoinsHistoricData(coins[index]);
-  }
-
-  console.log(`The average number of values of inserted coins is ${sumOfCoinValuesInDays / coinsInserted}`);
-}
-
-/* initDailyPriceVals().then(() => {
-  console.log('init finished');
-
-  startCrawl();
-}); */
 
 async function calculateAndInsertPrice (coinData, coinValueInUSD, date, coinSymbol) {
   const BTCValueOnDate = dailyPriceBTC[date];
@@ -263,7 +186,8 @@ async function main (marketCapData = currency, currencyChartData = coins) {
   for (let i in intervalEachCoin) {
     intervalEachCoin[i] = splitToIntervals(intervalEachCoin[i], formatDate(), timeIntervalMS);
   }
-  //console.log(intervalEachCoin);process.exit();
+
+  // console.log(intervalEachCoin);process.exit();
   console.log('All coins have successfully loaded.');
 
   for (let i in currencyChartData) {
@@ -286,7 +210,9 @@ async function main (marketCapData = currency, currencyChartData = coins) {
       calculateValues(coin[valueType], coins[i].symbol, valueType, calculatedCoinData);
     }
 
-    const coinArr = Object.values(calculatedCoinData);
+    const filledCoinData = fillCoinGaps(calculatedCoinData, coins[i].symbol, intervalEachCoin[currencyChartData[i].symbol][0]);
+
+    const coinArr = Object.values(filledCoinData);
 
     if (ENVIRONMENT !== 'INIT') {
       await db.CoinData.bulkCreate(coinArr);
@@ -404,6 +330,3 @@ function splitToIntervals (startDate, endDate, timeIntervalMS) {
 }
 
 startCrawling();
-// splitToIntervals('2016-01-01', formatDate(), timeIntervalMS);
-// 'https://www.cryptocurrencychart.com/api/coin/history/363/2016-01-01/2017-01-01/marketCap/USD'
-module.exports = startCrawl;

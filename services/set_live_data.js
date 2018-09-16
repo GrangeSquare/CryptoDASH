@@ -5,7 +5,7 @@ const axios = require('axios').create({
 });
 
 const { constants } = require('../config');
-const currency = require('../utils/currency_list');
+const currency = require('../utils/currency_union')();
 const BigNumber = require('bignumber.js');
 const { formatDate } = require('../utils/date_format');
 const db = require('../models');
@@ -43,7 +43,7 @@ async function main (start = 1, coinAPICount, coins, baseValues) {
         continue;
       }
 
-      const coinId = currency[coins[i].symbol];
+      const coinId = currency[coins[i].symbol].id;
       const calculatedCoin = calculateCoin(coins[i], baseValues, coinId);
 
       if (!calculatedCoin) {
@@ -91,8 +91,8 @@ async function saveToNewestTicker (coinArr) {
 }
 
 function calculateBaseCoins (coins) {
-  const idEth = currency['ETH'];
-  const idBtc = currency['BTC'];
+  const idEth = currency['ETH'].id;
+  const idBtc = currency['BTC'].id;
 
   const ethPrice = coins[idEth].quotes.USD.price;
   const btcPrice = coins[idBtc].quotes.USD.price;
