@@ -2,13 +2,12 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    const currencySource = require('../utils/currency_union')();
     const currencyList = require('../utils/full_coin_list');
     const sourceFile = require('../utils/currency_list');
     const bulkInsertArr = [];
     let counter = 0;
 
-    for (let i in currencySource) {
+    for (let i in currencyList) {
       if (counter++ === 100) {
         break;
       }
