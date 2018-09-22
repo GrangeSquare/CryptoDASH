@@ -1,6 +1,7 @@
 'use strict';
 
 const commentService = require('../services/comment');
+const hashtagService = require('../services/hashtag');
 const utils = require('../utils/utils');
 
 async function setComment (req, res, next) {
@@ -19,8 +20,10 @@ async function setComment (req, res, next) {
 
 async function getCommentsByHashtag (req, res, next) {
   try {
-    const comments = await commentService.getCommentsByHashtag(req.params.hashtag);
-    res.send(comments).end();
+    const response = {};
+    response.hashtagsList = await hashtagService.getHashtagsLike(req.params.hashtag);
+    response.comments = await commentService.getCommentsByHashtag(req.params.hashtag);
+    res.send(response).end();
   } catch (err) {
     next(err);
   }

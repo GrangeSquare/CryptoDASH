@@ -11,6 +11,7 @@ const resources = require('./resources');
 const email = require('./email');
 const post = require('./post');
 const hashtagCounter = require('./hashtag_counter');
+const hashtag = require('./hashtag');
 const comment = require('./comment');
 const like = require('./like');
 const auth = require('./auth');
@@ -42,8 +43,9 @@ router.post(`${baseUrl}/users/actions/change_password`, val.users.passChangeForg
 router.post(`${baseUrl}/users/:id/actions/init_totp_change`, authc.service, userRoutes.initTotpChange);
 router.post(`${baseUrl}/users/actions/change_totp`, val.users.totpChangeForgotten, userRoutes.changeTotpForgotten);
 router.post(`${baseUrl}/set_comment`, val.comments.setComment, comment.setComment);
-router.get(`${baseUrl}/resources/ticker_list`, h.table, resources.getTickers);
-router.get(`${baseUrl}/resources/currency_list`, h.table, resources.getCurrencyList);
+router.get(`${baseUrl}/get_hashtags_by_day/:day`, val.hashtags.checkDay, hashtagCounter.getStatusByDay);
+router.get(`${baseUrl}/get_count_hashtags/:day`, val.hashtags.checkDay, hashtagCounter.getCountByDay);
+router.post(`${baseUrl}/create_hashtag`, val.hashtags.creteHashtag, hashtag.createHashtag);
 
 router.post(`${baseUrl}/set_like`, val.likes.setLike, like.setLike);
 
@@ -53,8 +55,8 @@ router.get(`${baseUrl}/utils/email_verification/`, email.verify);
 // resourses for front
 router.get(`${baseUrl}/resources/`, resources.getResources);
 router.get(`${baseUrl}/get_posts`, post.getPosts);
-router.get(`${baseUrl}/get_hashtags_by_day/:day`, val.hashtags.checkDay, hashtagCounter.getStatusByDay);
-router.get(`${baseUrl}/get_count_hashtags/:day`, val.hashtags.checkDay, hashtagCounter.getCountByDay);
+router.get(`${baseUrl}/resources/ticker_list`, h.table, resources.getTickers);
+router.get(`${baseUrl}/resources/currency_list`, h.table, resources.getCurrencyList);
 
 // auth servise for checking if totp is right
 router.post(`${baseUrl}/totp`, auth.checkTotp);

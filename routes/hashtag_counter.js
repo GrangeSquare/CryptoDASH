@@ -1,6 +1,12 @@
 'use strict';
 
 const hashtagCounter = require('../services/hashtag_counter');
+const utils = require('../utils/utils');
+
+module.exports = {
+  getStatusByDay,
+  getCountByDay
+};
 
 async function getStatusByDay (req, res, next) {
   const status = await hashtagCounter.getStatusByDay(req.params.day);
@@ -8,11 +14,9 @@ async function getStatusByDay (req, res, next) {
 }
 
 async function getCountByDay (req, res, next) {
-  const numberOfHashtags = await hashtagCounter.getCountByDay(req.params.day);
-  res.send(numberOfHashtags).end();
-}
+  const numberOfHashtagsFirst = await hashtagCounter.getCountByDay(req.params.day);
+  const numberOfHashtagsSecond = await hashtagCounter.getCountByDay(req.params.day + req.params.day);
+  const numberInPercentage = utils.calculatePercentage(numberOfHashtagsFirst, numberOfHashtagsSecond - numberOfHashtagsSecond);
 
-module.exports = {
-  getStatusByDay,
-  getCountByDay
-};
+  res.send(numberInPercentage).end();
+}
