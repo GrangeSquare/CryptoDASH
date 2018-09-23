@@ -3,6 +3,10 @@
 const postService = require('../services/post');
 const Response = require('../utils/response');
 
+module.exports = {
+  getPosts
+};
+
 async function getPosts (req, res, next) {
   try {
     const posts = await postService.getPostsFromDB();
@@ -11,7 +15,3 @@ async function getPosts (req, res, next) {
     next(err);
   }
 }
-
-module.exports = {
-  getPosts
-};

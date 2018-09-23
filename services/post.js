@@ -2,6 +2,10 @@
 
 const db = require('../models');
 
+module.exports = {
+  getPostsFromDB
+};
+
 async function getPostsFromDB () {
   const posts = await db.Post.findAll({ 
     limit: 5,
@@ -15,7 +19,3 @@ async function getPostsFromDB () {
 
   return posts;
 }
-
-module.exports = {
-  getPostsFromDB
-};

@@ -2,6 +2,11 @@
 
 const { AUTH_SECRET, IPFS_SERVER_BASE_URL } = process.env;
 
+module.exports = {
+  addToIPFS,
+  getFromIPFS
+};
+
 const axios = require('axios').create({
   timeout: 3000,
   headers: {'auth-header': AUTH_SECRET}
@@ -26,8 +31,3 @@ async function getFromIPFS (hash) {
 
   return resp.data;
 }
-
-module.exports = {
-  addToIPFS,
-  getFromIPFS
-};

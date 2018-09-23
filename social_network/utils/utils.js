@@ -1,5 +1,9 @@
 'use strict';
 
+module.exports = {
+  prepareData
+};
+
 async function prepareForInstagram (data) {
   const dataForDB = {
     text: data.caption.text,
@@ -29,7 +33,3 @@ async function prepareData (data) {
     return prepareForInstagram(data);
   }
 }
-
-module.exports = {
-  prepareData
-};

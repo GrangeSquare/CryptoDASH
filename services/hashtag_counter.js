@@ -1,9 +1,15 @@
 'use strict';
 
 const db = require('../models');
-var moment = require('moment');
+const moment = require('moment');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
+
+module.exports = {
+  setCountOfHashtags,
+  getStatusByDay,
+  getCountByDay
+};
 
 async function setCountOfHashtags (dataFromAxios) {
   try {
@@ -79,9 +85,3 @@ async function getStatus (time) {
   });
   return status;
 }
-
-module.exports = {
-  setCountOfHashtags,
-  getStatusByDay,
-  getCountByDay
-};

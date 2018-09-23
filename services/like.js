@@ -2,6 +2,10 @@
 
 const db = require('../models');
 
+module.exports = {
+  setLike
+};
+
 async function setLike (data) {
   const like = db.Like.create(data);
 
@@ -9,7 +13,3 @@ async function setLike (data) {
     throw new Error();
   }
 }
-
-module.exports = {
-  setLike
-};

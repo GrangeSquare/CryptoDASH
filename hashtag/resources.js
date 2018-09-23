@@ -1,3 +1,5 @@
+'use strict';
+
 const currencyList = require('../utils/currency_list');
 let hashtags = '';
 let counter = 0;

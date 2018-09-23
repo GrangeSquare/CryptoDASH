@@ -7,6 +7,12 @@ const utilService = require('../services/resources');
 const DEFAULT_LANGUAGE = process.env.DEFAULT_LANGUAGE;
 const cache = {};
 
+module.exports = {
+  getResources,
+  getTickers,
+  getCurrencyList
+};
+
 function getResources (req, res, next) {
   try {
     const lang = res.locals.lang || DEFAULT_LANGUAGE;
@@ -55,9 +61,3 @@ async function getCurrencyList (req, res, next) {
     next(err);
   }
 }
-
-module.exports = {
-  getResources,
-  getTickers,
-  getCurrencyList
-};

@@ -6,6 +6,7 @@ module.exports = {
   getTickers,
   getCurrencyList
 };
+
 const currencyList = {
   count: null,
   rows: {}

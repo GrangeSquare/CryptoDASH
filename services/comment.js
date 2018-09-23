@@ -2,6 +2,11 @@
 
 const db = require('../models');
 
+module.exports = {
+  setComment,
+  getCommentsByHashtag
+};
+
 async function setComment (data) {
   const comment = db.Comment.create(data);
 
@@ -22,8 +27,3 @@ async function getCommentsByHashtag (hashtagId) {
 
   return comments;
 }
-
-module.exports = {
-  setComment,
-  getCommentsByHashtag
-};

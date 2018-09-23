@@ -4,7 +4,7 @@ const services = require('../services/users');
 const authServices = require('../services/auth');
 
 module.exports = {
-    checkTotp
+  checkTotp
 };
 
 const digitsRegexp = new RegExp('^[0-9]{1,6}$');
@@ -33,17 +33,17 @@ async function checkTotp (req, res, next) {
 }
 
 function validateUserId (userId) {
-    if (!(+userId > 0)) {
-      throw new Error();
-    } else {
-      return +userId;
-    }
+  if (!(+userId > 0)) {
+    throw new Error();
+  } else {
+    return +userId;
+  }
 }
 
 function validateTotpToken (totpToken) {
-    if (!digitsRegexp.test(totpToken)) {
-      throw new Error();
-    } else {
-      return totpToken;
-    }
+  if (!digitsRegexp.test(totpToken)) {
+    throw new Error();
+  } else {
+    return totpToken;
+  }
 }

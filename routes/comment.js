@@ -4,6 +4,11 @@ const commentService = require('../services/comment');
 const hashtagService = require('../services/hashtag');
 const utils = require('../utils/utils');
 
+module.exports = {
+  setComment,
+  getCommentsByHashtag
+};
+
 async function setComment (req, res, next) {
   try {
     const params = utils.getSubset([
@@ -28,8 +33,3 @@ async function getCommentsByHashtag (req, res, next) {
     next(err);
   }
 }
-
-module.exports = {
-  setComment,
-  getCommentsByHashtag
-};

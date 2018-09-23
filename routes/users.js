@@ -1,3 +1,5 @@
+'use strict';
+
 const utils = require('../utils/utils');
 const usersService = require('../services/users');
 const { AuthenticationError } = require('../utils/errors');

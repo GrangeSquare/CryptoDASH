@@ -1,3 +1,5 @@
+'use strict';
+
 const coinMarketList = require('./full_coin_list');
 const cryptoChartList = require('./coins').coinsArr;
 const currencyList = require('./currency_list');

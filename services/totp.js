@@ -2,6 +2,10 @@
 
 const speakeasy = require('speakeasy');
 
+module.exports = {
+  validateToken
+};
+
 async function validateToken (secret, token) {
   const verified = await speakeasy.totp.verify({
     secret: secret,
@@ -10,7 +14,3 @@ async function validateToken (secret, token) {
   });
   return verified;
 }
-
-module.exports = {
-  validateToken
-};

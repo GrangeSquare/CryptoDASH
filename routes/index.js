@@ -15,6 +15,7 @@ const hashtag = require('./hashtag');
 const comment = require('./comment');
 const like = require('./like');
 const auth = require('./auth');
+const currency = require('./currency');
 
 const router = express.Router();
 
@@ -57,6 +58,7 @@ router.get(`${baseUrl}/resources/`, resources.getResources);
 router.get(`${baseUrl}/get_posts`, post.getPosts);
 router.get(`${baseUrl}/resources/ticker_list`, h.table, resources.getTickers);
 router.get(`${baseUrl}/resources/currency_list`, h.table, resources.getCurrencyList);
+router.get(`${baseUrl}/curreny_tape/:day`, currency.getCurrencyTape);
 
 // auth servise for checking if totp is right
 router.post(`${baseUrl}/totp`, auth.checkTotp);

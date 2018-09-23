@@ -6,6 +6,7 @@ const totp = require('./totp');
 const { AuthorizationError } = require('../utils/errors');
 const ctx = require('../utils/ctx');
 const speakeasy = require('speakeasy');
+const config = require('../config/index');
 
 module.exports = {
   checkPassword,
@@ -15,6 +16,7 @@ module.exports = {
   changeTotpForgotten,
   validateToken
 };
+
 async function checkPassword (userId, password) {
   const UserAuth = await getUserAuth(userId);
 

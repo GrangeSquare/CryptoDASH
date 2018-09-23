@@ -3,6 +3,10 @@
 const likeService = require('../services/like');
 const utils = require('../utils/utils');
 
+module.exports = {
+  setLike
+};
+
 async function setLike (req, res, next) {
   try {
     const params = utils.getSubset([
@@ -16,7 +20,3 @@ async function setLike (req, res, next) {
     next(err);
   }
 }
-
-module.exports = {
-  setLike
-};
