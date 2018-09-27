@@ -2,7 +2,6 @@
 
 const axios = require('axios');
 const crypto = require('crypto');
-const percentDiff = require('percentage-difference');
 
 const getSubset = (keys, obj) => keys.reduce((a, c) => ({ ...a, [c]: obj[c] }), {});
 const invert = (data) => Object.entries(data).reduce((obj, [key, value]) => ({ ...obj, [value]: key }), {});
@@ -43,7 +42,8 @@ function calculatePercentage (objOne, objTwo) {
   const percentageChanges = {};
 
   for (let i in objOne) {
-    percentageChanges[i] = percentDiff(objTwo[i], objOne[i]);
+    var decreaseValue = objOne[i] - objTwo[i];
+    percentageChanges[i] = (decreaseValue / objTwo[i]) * 100;
   }
 
   return percentageChanges;

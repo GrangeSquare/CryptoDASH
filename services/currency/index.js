@@ -10,9 +10,9 @@ module.exports = {
   getPricesCurrenciesByDay
 };
 
-async function getPricesCurrenciesByDay (toDay, fromDay = 1) {
-  const fromPeriod = moment().add(-(fromDay - 1), 'day');
-  const toPeriod = moment().add(-toDay, 'day');
+async function getPricesCurrenciesByDay (toDay, fromDay = 0) {
+  const fromPeriod = moment().subtract(fromDay, 'day');
+  const toPeriod = moment().subtract(toDay, 'day');
 
   const pricesCarenncies = await db.CoinData.findAll({
     row: true,
@@ -23,7 +23,12 @@ async function getPricesCurrenciesByDay (toDay, fromDay = 1) {
           $gte: toPeriod
         }
       }
-    }
+    },
+    include: [{
+      model: db.Currency,
+      attributes: ['symbol']
+    }],
+    attributes: ['price_usd']
   });
 
   return pricesCarenncies && currencyDataMapper.mapPriceAndCurrecny(pricesCarenncies);

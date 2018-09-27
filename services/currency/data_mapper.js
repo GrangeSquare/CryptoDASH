@@ -8,7 +8,7 @@ async function mapPriceAndCurrecny (data) {
   const dataObj = {};
 
   data.forEach(element => {
-    let key = element.dataValues.currency_id;
+    let key = element.dataValues.Currency.dataValues.symbol;
     if (!dataObj[key]) {
       dataObj[key] = +element.dataValues.price_usd;
     } else {

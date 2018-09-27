@@ -1,7 +1,7 @@
 'use strict';
 
 const axios = require('./config');
-const hashtagCounterService = require('../services/hashtag_counter');
+const hashtagCounterService = require('../services/hashtag_counter/index');
 const hashtags = require('./resources');
 const clientId = process.env.CLIENT_ID;
 

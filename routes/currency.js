@@ -10,7 +10,7 @@ module.exports = {
 async function getCurrencyTape (req, res, next) {
   try {
     const pricesInfirstPeriod = await currencyService.getPricesCurrenciesByDay(req.params.day);
-    const pricesInsecondPeriod = await currencyService.getPricesCurrenciesByDay(req.params.day + req.params.day, req.params.day);
+    const pricesInsecondPeriod = await currencyService.getPricesCurrenciesByDay(req.params.day * 2, req.params.day);
     const currencyPercentageChange = utils.calculatePercentage(pricesInfirstPeriod, pricesInsecondPeriod);
 
     res.send(currencyPercentageChange).end();

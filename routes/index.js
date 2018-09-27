@@ -45,7 +45,7 @@ router.post(`${baseUrl}/users/:id/actions/init_totp_change`, authc.service, user
 router.post(`${baseUrl}/users/actions/change_totp`, val.users.totpChangeForgotten, userRoutes.changeTotpForgotten);
 router.post(`${baseUrl}/set_comment`, val.comments.setComment, comment.setComment);
 router.get(`${baseUrl}/get_hashtags_by_day/:day`, val.hashtags.checkDay, hashtagCounter.getStatusByDay);
-router.get(`${baseUrl}/get_count_hashtags/:day`, val.hashtags.checkDay, hashtagCounter.getCountByDay);
+router.get(`${baseUrl}/get_count_hashtags/:day`, val.hashtags.checkDay, hashtagCounter.getPercentageChangeByDay);
 router.post(`${baseUrl}/create_hashtag`, val.hashtags.creteHashtag, hashtag.createHashtag);
 
 router.post(`${baseUrl}/set_like`, val.likes.setLike, like.setLike);
