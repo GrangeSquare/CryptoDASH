@@ -26,7 +26,7 @@ async function getTickers (pagination, sort) {
   const data = await db.NewestTicker.findAndCountAll({
     limit: pagination.limit,
     offset: pagination.offset,
-    order: [[sort.sort_column, sort.sort_order]]
+    order: [[sort.column, sort.order]]
   });
 
   return data;
