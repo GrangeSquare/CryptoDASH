@@ -42,8 +42,10 @@ function calculatePercentage (objOne, objTwo) {
   const percentageChanges = {};
 
   for (let i in objOne) {
-    var decreaseValue = objOne[i] - objTwo[i];
-    percentageChanges[i] = (decreaseValue / objTwo[i]) * 100;
+    let decreaseValue = objOne[i] - objTwo[i];
+    if (decreaseValue && objTwo[i]) {
+      percentageChanges[i] = (decreaseValue / objTwo[i]) * 100;
+    }
   }
 
   return percentageChanges;

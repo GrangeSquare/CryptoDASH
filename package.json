@@ -22,6 +22,7 @@
         "kucoin-api": "0.0.3",
         "mailsender": "^1.1.2",
         "moment": "^2.22.2",
+        "morgan": "^1.9.1",
         "mysql2": "^1.5.3",
         "node-binance-api": "^0.7.4",
         "node-hitbtc": "^1.0.0",
