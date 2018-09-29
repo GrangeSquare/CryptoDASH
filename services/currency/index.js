@@ -14,14 +14,18 @@ async function getPricesCurrenciesByDay (toDay, fromDay = 0) {
   const fromPeriod = moment().subtract(fromDay, 'day');
   const toPeriod = moment().subtract(toDay, 'day');
 
-  const pricesCarenncies = await db.CoinData.findAll({
+  const pricesCurrencies = await db.CoinData.findAll({
     row: true,
     where: {
-      created_at: {
+      date: {
         [Op.and]: {
           $lte: fromPeriod,
           $gte: toPeriod
         }
+      }, 
+      currency_id: {
+        $lte: 100,
+        $gte: 1
       }
     },
     include: [{
@@ -31,5 +35,5 @@ async function getPricesCurrenciesByDay (toDay, fromDay = 0) {
     attributes: ['price_usd']
   });
 
-  return pricesCarenncies && currencyDataMapper.mapPriceAndCurrecny(pricesCarenncies);
+  return pricesCurrencies && currencyDataMapper.mapPriceAndCurrecny(pricesCurrencies);
 }

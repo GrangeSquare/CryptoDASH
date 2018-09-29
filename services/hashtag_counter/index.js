@@ -36,7 +36,7 @@ async function setCountHashtag (count, name) {
   await db.HashtagCounter.create({count: count, hashtag_id: hashtagId.get('id')});
 }
 
-async function getCountByDay (toDay, fromDay) {
+async function getCountByDay (toDay, fromDay = 0) {
   const fromPeriod = moment().subtract(fromDay, 'day');
   const toPeriod = moment().subtract(toDay, 'day');
 

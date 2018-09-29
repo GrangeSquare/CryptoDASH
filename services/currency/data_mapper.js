@@ -4,7 +4,7 @@ module.exports = {
   mapPriceAndCurrecny
 };
 
-async function mapPriceAndCurrecny (data) {
+function mapPriceAndCurrecny (data) {
   const dataObj = {};
 
   data.forEach(element => {
