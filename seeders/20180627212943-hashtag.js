@@ -2,8 +2,7 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    const currencyList = require('../utils/full_coin_list');
-    const sourceFile = require('../utils/currency_list');
+    const currencyList = require('../utils/currency_union')();
     const bulkInsertArr = [];
     let counter = 0;
 
@@ -12,14 +11,12 @@ module.exports = {
         break;
       }
 
-      if (sourceFile[currencyList[i].symbol]) {
-        bulkInsertArr.push({
-          name: currencyList[i].symbol,
-          currency_id: currencyList[i].id,
-          created_at: new Date(),
-          updated_at: new Date()
-        });
-      }
+      bulkInsertArr.push({
+        name: currencyList[i].symbol,
+        currency_id: currencyList[i].id,
+        created_at: new Date(),
+        updated_at: new Date()
+      });
     }
 
     return queryInterface.bulkInsert('hashtag', bulkInsertArr, {});
